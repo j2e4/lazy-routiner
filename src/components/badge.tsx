@@ -12,8 +12,10 @@ const BADGE_STYLES = {
   pink: 'bg-pink-50 text-pink-700 ring-pink-700/10',
 };
 
+export type BadgeVariant = keyof typeof BADGE_STYLES;
+
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: keyof typeof BADGE_STYLES;
+  variant?: BadgeVariant;
 }
 
 export default function Badge({ variant = 'gray', children }: BadgeProps) {

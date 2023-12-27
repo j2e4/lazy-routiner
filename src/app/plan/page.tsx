@@ -1,7 +1,25 @@
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
-import Badge from 'src/components/badge';
+import Badge, { BadgeVariant } from 'src/components/badge';
 import Button from 'src/components/button';
+import RoutineList from 'src/components/routine-list';
+
+const MOCK_DATA: {
+  id: string;
+  name: string;
+  badge: { name: string; variant: BadgeVariant };
+}[] = [
+  {
+    id: '1',
+    name: '챌린저스 기상 미션하기',
+    badge: { variant: 'blue', name: '생활' },
+  },
+  {
+    id: '2',
+    name: '뉴스레터 읽기',
+    badge: { variant: 'yellow', name: '상식' },
+  },
+];
 
 export default function PlanRoutine() {
   return (
@@ -18,30 +36,30 @@ export default function PlanRoutine() {
           루틴 등록하기
         </Button>
       </div>
-      <ul className="divide-y border-y border-gray-200">
-        <li className="relative flex justify-between gap-x-6 px-3.5 py-5 hover:bg-gray-50 md:px-8">
-          <div className="min-w-0 flex-auto">
-            <Badge variant="blue">생활</Badge>
-            <p className="mt-1 truncate text-sm font-medium leading-6 text-gray-800">
-              <Link href="/plan/new">
-                챌린저스 기상 미션하기
-                <span className="absolute inset-x-0 -top-px bottom-0"></span>
-              </Link>
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center">
-            <ChevronRightIcon className="h-5 w-5 text-gray-400" />
-          </div>
-        </li>
+      <RoutineList>
         {/*TODO*/}
         {false && (
-          <li className="px-3.5 py-5 md:px-8">
-            <p className="text-center text-sm leading-6 text-gray-800">
-              등록한 루틴이 없어요.
-            </p>
-          </li>
+          <RoutineList.Item center>
+            <RoutineList.ItemBody>등록한 루틴이 없어요.</RoutineList.ItemBody>
+          </RoutineList.Item>
         )}
-      </ul>
+        {MOCK_DATA.map(({ badge, ...routine }) => (
+          <RoutineList.Item key={routine.id} between>
+            <RoutineList.ItemHead>
+              <Badge variant={badge.variant}>{badge.name}</Badge>
+              <RoutineList.ItemBody>
+                <Link href="/plan">
+                  {routine.name}
+                  <span className="absolute inset-x-0 -top-px bottom-0"></span>
+                </Link>
+              </RoutineList.ItemBody>
+            </RoutineList.ItemHead>
+            <RoutineList.ItemTail>
+              <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+            </RoutineList.ItemTail>
+          </RoutineList.Item>
+        ))}
+      </RoutineList>
     </main>
   );
 }
