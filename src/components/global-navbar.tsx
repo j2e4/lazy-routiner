@@ -22,7 +22,7 @@ type NavItem = {
   disabled?: boolean;
 };
 const NavItems: NavItem[] = [
-  { name: '계획하기', slug: 'plan', icon: DocumentPlusIcon, disabled: true },
+  { name: '계획하기', slug: 'plan', icon: DocumentPlusIcon },
   {
     name: '실천하기',
     slug: 'routine',
