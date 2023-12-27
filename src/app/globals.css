@@ -8,3 +8,7 @@
   --theme-neutral-300: #a67f78;
   --theme-neutral-400: #32435f;
 }
+
+body {
+  background: var(--theme-neutral-100);
+}
