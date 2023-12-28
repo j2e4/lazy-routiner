@@ -39,8 +39,9 @@ function RoutineItemHead({ children }: PropsWithChildren) {
 }
 
 type CallableChildren<T> = (args: T) => ReactNode;
+type ExpandedPaneProps = { 'data-testid'?: string };
 type RoutineItemBodyChildrenProps = {
-  ExpandedPane: () => ReactNode;
+  ExpandedPane: (props: ExpandedPaneProps) => ReactNode;
 };
 function RoutineItemBody({
   children,
@@ -48,9 +49,11 @@ function RoutineItemBody({
   children?: ReactNode | CallableChildren<RoutineItemBodyChildrenProps>;
 }) {
   const hoverable = useHoverable();
-  const ExpandedPane = () =>
+  const ExpandedPane = (props: ExpandedPaneProps) =>
     // 부모 element에 relative 스타일이 필요하기 때문에 hoverable 검사가 필요하다.
-    hoverable && <span className="absolute inset-x-0 -top-px bottom-0"></span>;
+    hoverable && (
+      <span className="absolute inset-x-0 -top-px bottom-0" {...props} />
+    );
 
   return (
     <p className="truncate text-sm font-medium leading-6 text-gray-800">
