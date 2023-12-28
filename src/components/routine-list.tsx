@@ -1,5 +1,9 @@
+'use client';
+
 import clsx from 'clsx';
-import type { PropsWithChildren } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
+import HoverableProvider from 'src/contexts/hoverable/hoverable-provider';
+import { useHoverable } from 'src/hooks/useHoverable';
 
 function RoutineListRoot({ children }: PropsWithChildren) {
   return <ul className="divide-y border-y border-gray-200">{children}</ul>;
@@ -9,19 +13,24 @@ function RoutineItem({
   between,
   center,
   children,
-}: PropsWithChildren<{ between?: boolean; center?: boolean }>) {
+  hoverable = false,
+}: PropsWithChildren<{
+  between?: boolean;
+  center?: boolean;
+  hoverable?: boolean;
+}>) {
   return (
-    <li
-      className={clsx(
-        'relative flex gap-x-6 px-3.5 py-5 hover:bg-gray-50 md:px-8',
-        {
+    <HoverableProvider hoverable={hoverable}>
+      <li
+        className={clsx('flex gap-x-6 px-3.5 py-5 md:px-8', {
           'justify-between': between,
           'justify-center': center,
-        },
-      )}
-    >
-      {children}
-    </li>
+          'relative hover:bg-gray-50': hoverable,
+        })}
+      >
+        {children}
+      </li>
+    </HoverableProvider>
   );
 }
 
@@ -29,10 +38,24 @@ function RoutineItemHead({ children }: PropsWithChildren) {
   return <div className="min-w-0 flex-auto space-y-1">{children}</div>;
 }
 
-function RoutineItemBody({ children }: PropsWithChildren) {
+type CallableChildren<T> = (args: T) => ReactNode;
+type RoutineItemBodyChildrenProps = {
+  ExpandedPane: () => ReactNode;
+};
+function RoutineItemBody({
+  children,
+}: {
+  children?: ReactNode | CallableChildren<RoutineItemBodyChildrenProps>;
+}) {
+  const hoverable = useHoverable();
+  const ExpandedPane = () =>
+    // 부모 element에 relative 스타일이 필요하기 때문에 hoverable 검사가 필요하다.
+    hoverable && <span className="absolute inset-x-0 -top-px bottom-0"></span>;
+
   return (
     <p className="truncate text-sm font-medium leading-6 text-gray-800">
-      {children}
+      {typeof children === 'function' && children({ ExpandedPane })}
+      {typeof children !== 'function' && children}
     </p>
   );
 }
