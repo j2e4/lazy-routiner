@@ -1,11 +1,11 @@
 'use client';
 
 import clsx from 'clsx';
-import type { PropsWithChildren, ReactNode } from 'react';
+import React from 'react';
 import HoverableProvider from 'src/contexts/hoverable/hoverable-provider';
 import { useHoverable } from 'src/hooks/useHoverable';
 
-function RoutineListRoot({ children }: PropsWithChildren) {
+function RoutineListRoot({ children }: React.PropsWithChildren) {
   return <ul className="divide-y border-y border-gray-200">{children}</ul>;
 }
 
@@ -14,7 +14,7 @@ function RoutineItem({
   center,
   children,
   hoverable = false,
-}: PropsWithChildren<{
+}: React.PropsWithChildren<{
   between?: boolean;
   center?: boolean;
   hoverable?: boolean;
@@ -34,19 +34,19 @@ function RoutineItem({
   );
 }
 
-function RoutineItemHead({ children }: PropsWithChildren) {
+function RoutineItemHead({ children }: React.PropsWithChildren) {
   return <div className="min-w-0 flex-auto space-y-1">{children}</div>;
 }
 
-type CallableChildren<T> = (args: T) => ReactNode;
+type CallableChildren<T> = (args: T) => React.ReactNode;
 type ExpandedPaneProps = { 'data-testid'?: string };
 type RoutineItemBodyChildrenProps = {
-  ExpandedPane: (props: ExpandedPaneProps) => ReactNode;
+  ExpandedPane: (props: ExpandedPaneProps) => React.ReactNode;
 };
 function RoutineItemBody({
   children,
 }: {
-  children?: ReactNode | CallableChildren<RoutineItemBodyChildrenProps>;
+  children?: React.ReactNode | CallableChildren<RoutineItemBodyChildrenProps>;
 }) {
   const hoverable = useHoverable();
   const ExpandedPane = (props: ExpandedPaneProps) =>
@@ -63,8 +63,15 @@ function RoutineItemBody({
   );
 }
 
-function RoutineItemTail({ children }: PropsWithChildren) {
-  return <div className="flex shrink-0 items-center">{children}</div>;
+function RoutineItemTail({
+  children,
+  className,
+}: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) {
+  return (
+    <div className={clsx('flex shrink-0 items-center', className)}>
+      {children}
+    </div>
+  );
 }
 
 export default Object.assign(RoutineListRoot, {
