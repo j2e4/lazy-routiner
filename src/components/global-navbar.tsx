@@ -27,7 +27,6 @@ const NavItems: NavItem[] = [
     name: '실천하기',
     slug: 'routine',
     icon: DocumentCheckIcon,
-    disabled: true,
   },
   { name: '점검하기', slug: 'statistics', icon: ChartPieIcon, disabled: true },
   { name: '설정하기', slug: 'setting', icon: Cog6ToothIcon, disabled: true },

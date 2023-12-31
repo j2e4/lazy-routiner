@@ -1,3 +1,5 @@
+'use client';
+
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import Badge, { BadgeVariant } from 'src/components/badge';
@@ -44,14 +46,16 @@ export default function PlanRoutine() {
           </RoutineList.Item>
         )}
         {MOCK_DATA.map(({ badge, ...routine }) => (
-          <RoutineList.Item key={routine.id} between>
+          <RoutineList.Item key={routine.id} between hoverable>
             <RoutineList.ItemHead>
               <Badge variant={badge.variant}>{badge.name}</Badge>
               <RoutineList.ItemBody>
-                <Link href="/plan">
-                  {routine.name}
-                  <span className="absolute inset-x-0 -top-px bottom-0"></span>
-                </Link>
+                {({ ExpandedPane }) => (
+                  <Link href="/plan">
+                    {routine.name}
+                    <ExpandedPane />
+                  </Link>
+                )}
               </RoutineList.ItemBody>
             </RoutineList.ItemHead>
             <RoutineList.ItemTail>

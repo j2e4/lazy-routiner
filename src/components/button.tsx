@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type { ButtonHTMLAttributes } from 'react';
+import React, { forwardRef } from 'react';
 
 const BUTTON_STYLES = {
   primary:
@@ -17,51 +17,61 @@ const DISABLED_BUTTON_STYLES = {
 
 const BORDER_STYLES = {
   primary: 'shadow-sm',
-  secondary: 'ring-1 ring-inset ring-gray-300 ring-offset-0',
+  secondary: 'shadow-sm ring-1 ring-inset ring-gray-300',
   clear: '',
 };
 
 const SIZE_STYLES = {
+  sm: 'p-1.5 text-xs',
   md: 'p-2 text-sm',
 };
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: keyof typeof BUTTON_STYLES;
   size?: keyof typeof SIZE_STYLES;
   fullWidth?: boolean;
   rounded?: boolean;
+  screenReader?: string;
 }
 
-export default function Button({
-  type = 'button',
-  variant = 'primary',
-  size = 'md',
-  fullWidth,
-  rounded,
-  className,
-  children,
-  disabled,
-  ...props
-}: ButtonProps) {
+function ButtonRoot(
+  {
+    type,
+    variant = 'primary',
+    size = 'md',
+    fullWidth,
+    rounded,
+    screenReader,
+    className,
+    children,
+    disabled,
+    ...props
+  }: ButtonProps,
+  ref: React.LegacyRef<HTMLButtonElement> | null,
+) {
   return (
     <button
-      type={type}
+      type={type || 'button'}
       disabled={disabled}
       className={clsx(
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
         {
           'block w-full': fullWidth,
           'rounded-md': rounded,
-          [BUTTON_STYLES[variant]]: !disabled,
-          [DISABLED_BUTTON_STYLES[variant]]: disabled,
         },
+        disabled ? DISABLED_BUTTON_STYLES[variant] : BUTTON_STYLES[variant],
         BORDER_STYLES[variant],
         SIZE_STYLES[size],
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
         className,
       )}
+      ref={ref}
       {...props}
     >
+      {screenReader && <span className="sr-only">{screenReader}</span>}
       {children}
     </button>
   );
 }
+
+export default forwardRef(ButtonRoot);
