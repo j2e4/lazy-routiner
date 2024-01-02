@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .text-hover-disabled {
+    color: theme('colors.gray.400');
+  }
+
+  .text-hover-active {
+    color: theme('colors.gray.700');
+  }
+
+  .text-hover-active:hover,
+  .text-active {
+    color: theme('colors.gray.900');
+  }
+}
+
+@layer components {
+  .dropdown-item {
+    padding: theme('padding[1.5]') theme('padding.4');
+  }
+}
+
 :root {
   --theme-neutral-100: #e1dcd9;
   --theme-neutral-200: #8f8681;

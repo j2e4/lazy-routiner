@@ -1,11 +1,7 @@
 'use client';
 
-import { Menu, Transition } from '@headlessui/react';
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import clsx from 'clsx';
-import { Fragment } from 'react';
 import Badge, { BadgeVariant } from 'src/components/badge';
-import Button from 'src/components/button';
 import Dropdown from 'src/components/dropdown';
 import RoutineList from 'src/components/routine-list';
 
@@ -60,7 +56,9 @@ export default function RoutineToday() {
                 <Dropdown.Menu>
                   {['완료하기', '오늘은 건너뛰기', '오늘 안 하기'].map(
                     (name) => (
-                      <Dropdown.Item key={name}>{name}</Dropdown.Item>
+                      <Dropdown.ButtonItem key={name}>
+                        {name}
+                      </Dropdown.ButtonItem>
                     ),
                   )}
                 </Dropdown.Menu>
@@ -78,11 +76,9 @@ export default function RoutineToday() {
                   />
                 </Dropdown.Button>
                 <Dropdown.Menu>
-                  {['수정'].map((name) => (
-                    <Dropdown.Item key={name} disabled>
-                      {name}
-                    </Dropdown.Item>
-                  ))}
+                  <Dropdown.LinkItem href="#" disabled>
+                    수정
+                  </Dropdown.LinkItem>
                 </Dropdown.Menu>
               </Dropdown>
             </RoutineList.ItemTail>

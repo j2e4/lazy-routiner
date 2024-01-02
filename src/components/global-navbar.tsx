@@ -104,11 +104,10 @@ function GlobalNavItem({
       className={clsx(
         '-mx-3 my-1.5 flex place-items-center gap-3 rounded-md p-3 text-base leading-7 md:gap-1.5',
         {
-          'cursor-default text-gray-400': disabled,
-          'hover:bg-theme-neutral-300/20 text-gray-500 hover:text-gray-600':
-            selectable,
+          'text-hover-disabled cursor-default': disabled,
+          'hover:bg-theme-neutral-300/20 text-hover-active': selectable,
           'font-normal': !active,
-          'font-medium text-gray-800': active,
+          'text-active font-medium': active,
         },
       )}
       onClick={(e) => {
