@@ -76,8 +76,8 @@ export default function RoutineToday() {
                   />
                 </Dropdown.Button>
                 <Dropdown.Menu>
-                  <Dropdown.LinkItem href="#" disabled>
-                    수정
+                  <Dropdown.LinkItem href={`/plan/${routine.id}`}>
+                    수정하기
                   </Dropdown.LinkItem>
                 </Dropdown.Menu>
               </Dropdown>

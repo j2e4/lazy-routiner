@@ -24,6 +24,7 @@ const BORDER_STYLES = {
 const SIZE_STYLES = {
   sm: 'p-1.5 text-xs',
   md: 'p-2 text-sm',
+  wmd: 'px-3 py-2 text-sm',
   unset: '',
 };
 

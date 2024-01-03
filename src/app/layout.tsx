@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <GlobalNavbar />
-        <div className="mx-auto min-h-screen max-w-2xl space-y-8 bg-white pb-4 pt-20 shadow-lg shadow-black/10">
+        <div className="relative mx-auto min-h-screen max-w-2xl space-y-8 bg-white pb-4 pt-20 shadow-lg shadow-black/10">
           {children}
         </div>
       </body>
