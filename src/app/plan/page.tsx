@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import Badge, { BadgeVariant } from 'src/components/badge';
@@ -24,6 +25,8 @@ const MOCK_DATA: {
 ];
 
 export default function PlanRoutine() {
+  const router = useRouter();
+
   return (
     <main>
       <div className="flex justify-end px-6 pb-4">
@@ -31,8 +34,8 @@ export default function PlanRoutine() {
           variant="primary"
           rounded
           fullWidth
-          disabled
           className="flex items-center justify-center gap-1 font-semibold"
+          onClick={() => router.push('/plan/new')}
         >
           <PlusIcon className="-ml-1 h-5 w-5" />
           루틴 등록하기
@@ -51,7 +54,7 @@ export default function PlanRoutine() {
               <Badge variant={badge.variant}>{badge.name}</Badge>
               <RoutineList.ItemBody>
                 {({ ExpandedPane }) => (
-                  <Link href="/plan">
+                  <Link href={`/plan/${routine.id}`}>
                     {routine.name}
                     <ExpandedPane />
                   </Link>

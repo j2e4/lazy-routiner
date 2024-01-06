@@ -6,13 +6,13 @@ const BUTTON_STYLES = {
     'bg-theme-neutral-200 text-white hover:bg-theme-neutral-200/90 focus-visible:outline-theme-neutral-200',
   secondary:
     'bg-white text-gray-900 hover:bg-gray-50 focus-visible:outline-gray-300',
-  clear: 'text-gray-500 hover:text-gray-600',
+  clear: 'text-hover-active',
 };
 
 const DISABLED_BUTTON_STYLES = {
   primary: 'bg-theme-neutral-200/80 text-white',
-  secondary: 'bg-gray-100 text-gray-400',
-  clear: 'text-gray-400',
+  secondary: 'bg-gray-100 text-hover-disabled',
+  clear: 'text-hover-disabled',
 };
 
 const BORDER_STYLES = {
@@ -24,6 +24,8 @@ const BORDER_STYLES = {
 const SIZE_STYLES = {
   sm: 'p-1.5 text-xs',
   md: 'p-2 text-sm',
+  wmd: 'px-3 py-2 text-sm',
+  unset: '',
 };
 
 export interface ButtonProps

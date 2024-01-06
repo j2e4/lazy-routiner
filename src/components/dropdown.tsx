@@ -1,7 +1,8 @@
 import { Menu, MenuItemProps, Transition } from '@headlessui/react';
 import clsx from 'clsx';
-import { Fragment, type PropsWithChildren } from 'react';
+import React, { Fragment } from 'react';
 import Button, { ButtonProps } from 'src/components/button';
+import Link, { LinkProps } from 'next/link';
 
 function DropdownRoot({ children }: React.PropsWithChildren) {
   return (
@@ -43,22 +44,21 @@ function DropdownMenu({ children }: React.PropsWithChildren) {
   );
 }
 
-function DropdownItem<TTag extends React.ElementType>({
+function DropdownItemRoot<TTag extends React.ElementType>({
   children,
   disabled,
   ...props
-}: PropsWithChildren<MenuItemProps<TTag>>) {
+}: React.PropsWithChildren<MenuItemProps<TTag>>) {
   return (
     <Menu.Item disabled={disabled} {...props}>
       {({ active }) => (
         <li
           className={clsx(
-            'block whitespace-nowrap px-4 py-1.5 text-sm',
-            disabled && 'cursor-default text-gray-400',
-            !disabled && 'cursor-pointer',
+            'block whitespace-nowrap text-sm',
+            disabled && 'text-hover-disabled cursor-default',
+            !disabled && 'text-hover-active cursor-pointer',
             !disabled && {
-              'bg-gray-100 text-gray-900': active,
-              'text-gray-700': !active,
+              'text-active bg-gray-100': active,
             },
           )}
         >
@@ -69,10 +69,60 @@ function DropdownItem<TTag extends React.ElementType>({
   );
 }
 
+function DropdownItem({ children }: React.PropsWithChildren) {
+  return (
+    // TODO
+    <DropdownItemRoot>{children}</DropdownItemRoot>
+  );
+}
+
+function DropdownButtonItem({
+  disabled,
+  children,
+  ...props
+}: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) {
+  return (
+    <DropdownItemRoot disabled={disabled}>
+      <Button
+        variant="clear"
+        size="unset"
+        className="dropdown-item cursor- text-left"
+        fullWidth
+        disabled={disabled}
+        {...props}
+      >
+        {children}
+      </Button>
+    </DropdownItemRoot>
+  );
+}
+
+function DropdownLinkItem({
+  href,
+  disabled,
+  children,
+}: LinkProps & React.HTMLProps<HTMLAnchorElement>) {
+  return (
+    <DropdownItemRoot disabled={disabled}>
+      <Link
+        href={href}
+        className="dropdown-item block"
+        onClick={(e) => {
+          if (disabled) e.preventDefault();
+        }}
+      >
+        {children}
+      </Link>
+    </DropdownItemRoot>
+  );
+}
+
 const Dropdown = Object.assign(DropdownRoot, {
   Button: DropdownButton,
   Menu: DropdownMenu,
   Items: DropdownMenu,
   Item: DropdownItem,
+  ButtonItem: DropdownButtonItem,
+  LinkItem: DropdownLinkItem,
 });
 export default Dropdown;

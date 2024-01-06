@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.26.4",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.1.1",
     "clsx": "^2.0.0",
@@ -18,6 +19,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@types/jest": "^29.5.11",

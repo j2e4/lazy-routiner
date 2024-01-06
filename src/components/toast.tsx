@@ -1,0 +1,64 @@
+import { offset, useFloating } from '@floating-ui/react';
+import type { Placement } from '@floating-ui/utils';
+import { Transition } from '@headlessui/react';
+import clsx from 'clsx';
+import { Fragment } from 'react';
+
+const Body = {
+  warn: 'bg-amber-300 text-slate-900',
+  error: 'bg-red-500 text-slate-50',
+};
+
+type ToastProps = React.PropsWithChildren<{
+  show: boolean;
+  variant: 'warn' | 'error';
+  options: {
+    placement: Placement;
+    reference: Element | null;
+  };
+}>;
+
+export default function Toast({
+  show,
+  variant,
+  options,
+  children,
+}: ToastProps) {
+  const { floatingStyles, y, refs } = useFloating({
+    placement: options.placement,
+    middleware: [
+      offset({
+        mainAxis: 10,
+      }),
+    ],
+    elements: options && {
+      reference: options.reference,
+    },
+    transform: false,
+  });
+
+  return (
+    <Transition
+      as={Fragment}
+      show={show}
+      enter="transition ease-out duration-200"
+      enterFrom="opacity-0 translate-y-3"
+      enterTo="opacity-100 translate-y-0"
+      leave="transition ease-in duration-150"
+      leaveFrom="opacity-100 translate-y-0"
+      leaveTo="opacity-0 translate-y-3"
+    >
+      <div
+        role="alert"
+        ref={refs.setFloating}
+        style={floatingStyles}
+        className={clsx(
+          'inline-flex items-center rounded-3xl px-3 py-1 text-xs',
+          Body[variant],
+        )}
+      >
+        {children}
+      </div>
+    </Transition>
+  );
+}
