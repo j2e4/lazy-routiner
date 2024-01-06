@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Badge, { BadgeVariant } from 'src/components/badge';
 import Button from 'src/components/button';
 import Form from 'src/components/form';
+import Toast from 'src/components/toast';
 
 const MOCK_DATA: {
   id: string;
@@ -21,20 +22,56 @@ export default function DoPlanRoutine() {
   const [days, setDays] = useState<{ [key: string]: boolean }>({});
   const [name, setName] = useState<string>('');
 
+  const [catRef, setCatRef] = useState<HTMLLegendElement | null>(null);
+  const [daysRef, setDaysRef] = useState<HTMLLegendElement | null>(null);
+  const [nameRef, setNameRef] = useState<HTMLLabelElement | null>(null);
+
+  const [categoryInvalid, setCategoryInvalid] = useState(false);
+  const [daysInvalid, setDaysInvalid] = useState(false);
+  const [nameInvalid, setNameInvalid] = useState(false);
+
+  const validate = () => {
+    let daysInvalid = true;
+    for (let day in days)
+      if (days[day]) {
+        daysInvalid = false;
+      }
+    const categoryInvalid = category === '';
+    const nameInvalid = name === '';
+
+    setCategoryInvalid(categoryInvalid);
+    setDaysInvalid(daysInvalid);
+    setNameInvalid(nameInvalid);
+    return !(categoryInvalid || daysInvalid || nameInvalid);
+  };
+
   return (
     <main>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(category);
-          console.log(days);
-          console.log(name);
-          router.back();
+
+          if (validate()) {
+            console.log('##', category);
+            console.log('##', days);
+            console.log('##', name);
+            router.back();
+          }
         }}
       >
         <div className="space-y-8 px-10 pt-4">
           <fieldset>
-            <Form.Legend>루틴 카테고리</Form.Legend>
+            <Form.Legend ref={setCatRef}>루틴 카테고리</Form.Legend>
+            <Toast
+              show={categoryInvalid}
+              variant="error"
+              options={{
+                placement: 'right',
+                reference: catRef,
+              }}
+            >
+              하나 이상 선택해야 해요.
+            </Toast>
             <div className="mt-4 space-y-4">
               {MOCK_DATA.map((badge) => (
                 <div key={badge.id} className="flex items-center gap-x-3">
@@ -55,7 +92,17 @@ export default function DoPlanRoutine() {
             </div>
           </fieldset>
           <fieldset>
-            <Form.Legend>루틴을 반복할 요일</Form.Legend>
+            <Form.Legend ref={setDaysRef}>루틴을 반복할 요일</Form.Legend>
+            <Toast
+              show={daysInvalid}
+              variant="error"
+              options={{
+                placement: 'right',
+                reference: daysRef,
+              }}
+            >
+              하나 이상 선택해야 해요.
+            </Toast>
             <div className="mt-4 grid grid-cols-4 gap-x-6 gap-y-4 sm:grid-cols-7">
               {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
                 <div key={d} className="relative flex gap-x-3 sm:col-span-1">
@@ -79,7 +126,19 @@ export default function DoPlanRoutine() {
             </div>
           </fieldset>
           <div>
-            <Form.Label htmlFor="name">실천할 내용</Form.Label>
+            <Form.Label htmlFor="name" ref={setNameRef}>
+              실천할 내용
+            </Form.Label>
+            <Toast
+              show={nameInvalid}
+              variant="error"
+              options={{
+                placement: 'right',
+                reference: nameRef,
+              }}
+            >
+              빈 값일 수 없어요.
+            </Toast>
             <Form.InputText
               id="name"
               placeholder="자기 전에 일기 쓰기"

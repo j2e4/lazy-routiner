@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { forwardRef } from 'react';
 
 function FormRoot({ children }: React.PropsWithChildren) {
   return <>{children}</>;
@@ -59,22 +60,37 @@ function FormInputRadio({
   return <FormInput type="radio" className="h-4 w-4" {...props} />;
 }
 
-function FormLabel({
-  children,
-  ...props
-}: React.PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) {
+function FormLabel(
+  {
+    children,
+    ...props
+  }: React.PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>,
+  ref: React.LegacyRef<HTMLLabelElement> | null,
+) {
   return (
-    <label className="text-sm font-medium leading-6 text-gray-900" {...props}>
+    <label
+      className="inline-block text-sm font-medium leading-6 text-gray-900"
+      ref={ref}
+      {...props}
+    >
       {children}
     </label>
   );
 }
 
-function FormLegend({
-  children,
-}: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
+function FormLegend(
+  {
+    children,
+    ...props
+  }: React.PropsWithChildren<React.HTMLAttributes<HTMLLegendElement>>,
+  ref: React.LegacyRef<HTMLLegendElement> | null,
+) {
   return (
-    <legend className="text-sm font-semibold leading-6 text-gray-900">
+    <legend
+      className="text-sm font-semibold leading-6 text-gray-900"
+      ref={ref}
+      {...props}
+    >
       {children}
     </legend>
   );
@@ -84,7 +100,7 @@ const Form = Object.assign(FormRoot, {
   InputText: FormInputText,
   InputCheckbox: FormInputCheckbox,
   InputRadio: FormInputRadio,
-  Label: FormLabel,
-  Legend: FormLegend,
+  Label: forwardRef(FormLabel),
+  Legend: forwardRef(FormLegend),
 });
 export default Form;
