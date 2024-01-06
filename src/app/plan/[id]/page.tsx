@@ -1,10 +1,10 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import Badge, { BadgeVariant } from 'src/components/badge';
 import Button from 'src/components/button';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
+import { useInputReducer } from 'src/hooks/useInputReducer';
 
 const MOCK_DATA: {
   id: string;
@@ -18,31 +18,28 @@ const MOCK_DATA: {
 export default function DoPlanRoutine() {
   const router = useRouter();
 
-  const [category, setCategory] = useState<string>('');
-  const [days, setDays] = useState<{ [key: string]: boolean }>({});
-  const [name, setName] = useState<string>('');
-
-  const [catRef, setCatRef] = useState<HTMLLegendElement | null>(null);
-  const [daysRef, setDaysRef] = useState<HTMLLegendElement | null>(null);
-  const [nameRef, setNameRef] = useState<HTMLLabelElement | null>(null);
-
-  const [categoryInvalid, setCategoryInvalid] = useState(false);
-  const [daysInvalid, setDaysInvalid] = useState(false);
-  const [nameInvalid, setNameInvalid] = useState(false);
+  const [category, categoryDispatcher] = useInputReducer<
+    string,
+    HTMLLegendElement
+  >('');
+  const [days, daysDispatcher] = useInputReducer<
+    { [key: string]: boolean },
+    HTMLLegendElement
+  >({});
+  const [name, nameDispatcher] = useInputReducer<string, HTMLLabelElement>('');
 
   const validate = () => {
-    let daysInvalid = true;
-    for (let day in days)
-      if (days[day]) {
-        daysInvalid = false;
-      }
-    const categoryInvalid = category === '';
-    const nameInvalid = name === '';
-
-    setCategoryInvalid(categoryInvalid);
-    setDaysInvalid(daysInvalid);
-    setNameInvalid(nameInvalid);
-    return !(categoryInvalid || daysInvalid || nameInvalid);
+    return [
+      categoryDispatcher.validate((v) => v !== ''),
+      daysDispatcher.validate((v) => {
+        for (let day in v)
+          if (v[day]) {
+            return true;
+          }
+        return false;
+      }),
+      nameDispatcher.validate((v) => v !== ''),
+    ].every((valid) => valid);
   };
 
   return (
@@ -50,24 +47,25 @@ export default function DoPlanRoutine() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-
           if (validate()) {
-            console.log('##', category);
-            console.log('##', days);
-            console.log('##', name);
+            console.log('##', category.value);
+            console.log('##', days.value);
+            console.log('##', name.value);
             router.back();
           }
         }}
       >
         <div className="space-y-8 px-10 pt-4">
           <fieldset>
-            <Form.Legend ref={setCatRef}>루틴 카테고리</Form.Legend>
+            <Form.Legend ref={categoryDispatcher.setRef}>
+              루틴 카테고리
+            </Form.Legend>
             <Toast
-              show={categoryInvalid}
+              show={category.invalid}
               variant="error"
               options={{
                 placement: 'right',
-                reference: catRef,
+                reference: category.ref,
               }}
             >
               하나 이상 선택해야 해요.
@@ -79,9 +77,9 @@ export default function DoPlanRoutine() {
                     id={badge.id}
                     name="category"
                     value={badge.id}
-                    checked={category === badge.id}
+                    checked={category.value === badge.id}
                     onChange={(e) => {
-                      setCategory(e.target.value);
+                      categoryDispatcher.change(e.target.value);
                     }}
                   />
                   <Form.Label htmlFor={badge.id}>
@@ -92,13 +90,15 @@ export default function DoPlanRoutine() {
             </div>
           </fieldset>
           <fieldset>
-            <Form.Legend ref={setDaysRef}>루틴을 반복할 요일</Form.Legend>
+            <Form.Legend ref={daysDispatcher.setRef}>
+              루틴을 반복할 요일
+            </Form.Legend>
             <Toast
-              show={daysInvalid}
+              show={days.invalid}
               variant="error"
               options={{
                 placement: 'right',
-                reference: daysRef,
+                reference: days.ref,
               }}
             >
               하나 이상 선택해야 해요.
@@ -111,12 +111,12 @@ export default function DoPlanRoutine() {
                       id={d}
                       name={d}
                       value={i}
-                      checked={days[i] || false}
+                      checked={days.value[i] || false}
                       onChange={({ target: { value, checked } }) => {
-                        setDays((prevDays) => ({
-                          ...prevDays,
+                        daysDispatcher.change({
+                          ...days.value,
                           [value]: checked,
-                        }));
+                        });
                       }}
                     />
                   </div>
@@ -126,15 +126,15 @@ export default function DoPlanRoutine() {
             </div>
           </fieldset>
           <div>
-            <Form.Label htmlFor="name" ref={setNameRef}>
+            <Form.Label htmlFor="name" ref={nameDispatcher.setRef}>
               실천할 내용
             </Form.Label>
             <Toast
-              show={nameInvalid}
+              show={name.invalid}
               variant="error"
               options={{
                 placement: 'right',
-                reference: nameRef,
+                reference: name.ref,
               }}
             >
               빈 값일 수 없어요.
@@ -143,9 +143,9 @@ export default function DoPlanRoutine() {
               id="name"
               placeholder="자기 전에 일기 쓰기"
               className="mt-4"
-              value={name}
+              value={name.value}
               onChange={(e) => {
-                setName(e.target.value);
+                nameDispatcher.change(e.target.value);
               }}
             />
           </div>
