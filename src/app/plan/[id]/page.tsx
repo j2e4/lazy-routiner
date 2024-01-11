@@ -124,7 +124,10 @@ export default function DoPlanRoutine() {
           </div>
         </fieldset>
         <div>
-          <Form.Label htmlFor="name" ref={nameDispatcher.setRef}>
+          <Form.Label
+            htmlFor="routiner-routine-name"
+            ref={nameDispatcher.setRef}
+          >
             실천할 내용
           </Form.Label>
           <Toast
@@ -138,7 +141,7 @@ export default function DoPlanRoutine() {
             빈 값일 수 없어요.
           </Toast>
           <Form.InputText
-            id="name"
+            id="routiner-routine-name"
             placeholder="자기 전에 일기 쓰기"
             className="mt-4"
             value={name.value}
