@@ -29,7 +29,7 @@ const NavItems: NavItem[] = [
     icon: DocumentCheckIcon,
   },
   { name: '점검하기', slug: 'statistics', icon: ChartPieIcon, disabled: true },
-  { name: '설정하기', slug: 'setting', icon: Cog6ToothIcon, disabled: true },
+  { name: '설정하기', slug: 'setting', icon: Cog6ToothIcon },
 ];
 
 export default function GlobalNavbar() {
