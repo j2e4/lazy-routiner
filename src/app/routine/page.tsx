@@ -3,7 +3,7 @@
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import Badge, { BadgeVariant } from 'src/components/badge';
 import Dropdown from 'src/components/dropdown';
-import RoutineList from 'src/components/routine-list';
+import List from 'src/components/list';
 
 const MOCK_DATA: {
   id: string;
@@ -25,22 +25,26 @@ const MOCK_DATA: {
 export default function RoutineToday() {
   return (
     <main>
-      <RoutineList>
+      <List border="b">
         {/*TODO*/}
         {false && (
-          <RoutineList.Item center>
-            <RoutineList.ItemBody>
-              오늘 루틴을 모두 완료했어요.
-            </RoutineList.ItemBody>
-          </RoutineList.Item>
+          <List.Item>
+            <List.ItemBody className="text-center">
+              <List.ItemBodyText>
+                오늘 루틴을 모두 완료했어요.
+              </List.ItemBodyText>
+            </List.ItemBody>
+          </List.Item>
         )}
         {MOCK_DATA.map(({ badge, ...routine }) => (
-          <RoutineList.Item key={routine.id} between>
-            <RoutineList.ItemHead>
+          <List.Item key={routine.id}>
+            <List.ItemBody>
               <Badge variant={badge.variant}>{badge.name}</Badge>
-              <RoutineList.ItemBody>{routine.name}</RoutineList.ItemBody>
-            </RoutineList.ItemHead>
-            <RoutineList.ItemTail className="space-x-1">
+              <List.ItemBodyText className="mt-1 block">
+                {routine.name}
+              </List.ItemBodyText>
+            </List.ItemBody>
+            <List.ItemTail className="flex items-center space-x-1">
               <Dropdown>
                 <Dropdown.Button
                   variant="secondary"
@@ -81,10 +85,10 @@ export default function RoutineToday() {
                   </Dropdown.LinkItem>
                 </Dropdown.Menu>
               </Dropdown>
-            </RoutineList.ItemTail>
-          </RoutineList.Item>
+            </List.ItemTail>
+          </List.Item>
         ))}
-      </RoutineList>
+      </List>
     </main>
   );
 }

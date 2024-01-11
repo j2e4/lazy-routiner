@@ -5,7 +5,7 @@ import { ChevronRightIcon, PlusIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import Badge, { BadgeVariant } from 'src/components/badge';
 import Button from 'src/components/button';
-import RoutineList from 'src/components/routine-list';
+import List from 'src/components/list';
 
 const MOCK_DATA: {
   id: string;
@@ -29,44 +29,44 @@ export default function PlanRoutine() {
 
   return (
     <main>
-      <div className="flex justify-end px-6 pb-4">
-        <Button
-          variant="primary"
-          rounded
-          fullWidth
-          className="flex items-center justify-center gap-1 font-semibold"
-          onClick={() => router.push('/plan/new')}
-        >
-          <PlusIcon className="-ml-1 h-5 w-5" />
-          루틴 등록하기
-        </Button>
-      </div>
-      <RoutineList>
+      <List border="b">
         {/*TODO*/}
         {false && (
-          <RoutineList.Item center>
-            <RoutineList.ItemBody>등록한 루틴이 없어요.</RoutineList.ItemBody>
-          </RoutineList.Item>
+          <List.Item>
+            <List.ItemBody className="text-center">
+              <List.ItemBodyText>등록한 루틴이 없어요.</List.ItemBodyText>
+            </List.ItemBody>
+          </List.Item>
         )}
         {MOCK_DATA.map(({ badge, ...routine }) => (
-          <RoutineList.Item key={routine.id} between hoverable>
-            <RoutineList.ItemHead>
-              <Badge variant={badge.variant}>{badge.name}</Badge>
-              <RoutineList.ItemBody>
-                {({ ExpandedPane }) => (
-                  <Link href={`/plan/${routine.id}`}>
+          <List.Item key={routine.id} hoverable>
+            <List.ItemBody>
+              {({ Filler }) => (
+                <>
+                  <Badge variant={badge.variant}>{badge.name}</Badge>
+                  <List.ItemBodyText
+                    as={Link}
+                    href={`/plan/${routine.id}`}
+                    className="mt-1 block"
+                  >
                     {routine.name}
-                    <ExpandedPane />
-                  </Link>
-                )}
-              </RoutineList.ItemBody>
-            </RoutineList.ItemHead>
-            <RoutineList.ItemTail>
+                    <Filler />
+                  </List.ItemBodyText>
+                </>
+              )}
+            </List.ItemBody>
+            <List.ItemTail className="inline-flex items-center">
               <ChevronRightIcon className="h-5 w-5 text-gray-400" />
-            </RoutineList.ItemTail>
-          </RoutineList.Item>
+            </List.ItemTail>
+          </List.Item>
         ))}
-      </RoutineList>
+      </List>
+      <Button
+        className="absolute bottom-0 right-0 m-4 rounded-full p-4"
+        onClick={() => router.push('/plan/new')}
+      >
+        <PlusIcon className="h-8 w-8" />
+      </Button>
     </main>
   );
 }

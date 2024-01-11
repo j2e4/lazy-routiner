@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import type { HTMLAttributes } from 'react';
 
-const BADGE_STYLES = {
+export const BADGE_STYLES = {
   gray: 'bg-gray-50 text-gray-600 ring-gray-500/10',
   red: 'bg-red-50 text-red-700 ring-red-600/10',
   yellow: 'bg-yellow-50 text-yellow-800 ring-yellow-600/20',
