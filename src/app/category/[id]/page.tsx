@@ -13,7 +13,7 @@ export default function RoutineCategoryUpdatePage() {
       <RoutineCategoryForm
         category={{
           id: '1',
-          theme: 'blue',
+          theme: 'BLUE',
           name: '생활',
         }}
         onSubmit={handleSubmit}

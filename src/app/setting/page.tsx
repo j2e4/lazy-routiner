@@ -14,8 +14,6 @@ const MOCK_DATA: {
   name: string;
   variant: BadgeVariant;
 }[] = [
-  { id: '1', variant: 'blue', name: '생활' },
-  { id: '2', variant: 'yellow', name: '상식' },
 ];
 
 export default function SettingRootPage() {

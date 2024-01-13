@@ -1,12 +1,12 @@
 export type CategoryTheme =
-  | 'gray'
-  | 'red'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'indigo'
-  | 'purple'
-  | 'pink';
+  | 'GRAY'
+  | 'RED'
+  | 'YELLOW'
+  | 'GREEN'
+  | 'BLUE'
+  | 'INDIGO'
+  | 'PURPLE'
+  | 'PINK';
 
 export type CategoryInput = {
   id?: string; // uuid

@@ -15,12 +15,12 @@ const MOCK_DATA: {
   {
     id: '1',
     name: '챌린저스 기상 미션하기',
-    badge: { variant: 'blue', name: '생활' },
+    badge: { variant: 'BLUE', name: '생활' },
   },
   {
     id: '2',
     name: '뉴스레터 읽기',
-    badge: { variant: 'yellow', name: '상식' },
+    badge: { variant: 'YELLOW', name: '상식' },
   },
 ];
 
