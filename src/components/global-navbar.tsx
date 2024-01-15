@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useState } from 'react';
 import Button from 'src/components/button';
+import SlidePanel from 'src/components/slide-panel';
 
 type NavItem = {
   name: string;
@@ -21,7 +22,7 @@ type NavItem = {
   description?: string;
   disabled?: boolean;
 };
-const NavItems: NavItem[] = [
+const NAV_ITEMS: NavItem[] = [
   { name: '계획하기', slug: 'plan', icon: DocumentPlusIcon },
   {
     name: '실천하기',
@@ -37,77 +38,69 @@ export default function GlobalNavbar() {
   const close = () => setIsOpen(false);
 
   return (
-    <header className="border-theme-neutral-330 bg-theme-neutral-350 fixed inset-x-0 top-0 z-50 flex h-16 border-b">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-4 md:px-5 lg:px-8">
-        <div className="flex flex-1 items-center gap-x-6">
-          {/* TODO buttons like go back */}
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 flex h-16 border-b border-theme-neutral-330 bg-theme-neutral-350">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-4 md:px-5 lg:px-8">
+          <div className="flex flex-1 items-center gap-x-6">
+            {/* TODO buttons like go back */}
+          </div>
+          <div className="flex flex-1 items-center justify-end gap-x-4">
+            <Button variant="clear" className="-m-2" disabled>
+              <span className="sr-only">View notifications</span>
+              <BellIcon className="h-6 w-6" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="clear"
+              className="-m-2"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <span className="sr-only">Toggle main menu open</span>
+              {isOpen ? (
+                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </Button>
+          </div>
         </div>
-        <div
-          className={clsx('lg:static lg:block', {
-            'bg-theme-neutral-350 fixed inset-x-0 bottom-0 top-14 mt-2 overflow-y-auto':
-              isOpen,
-          })}
-        >
-          <nav
-            className={clsx(
-              'md:flex md:gap-x-11 md:text-sm md:font-semibold md:leading-6 md:text-gray-900',
-              {
-                'space-y-2 px-5 pb-24 pt-3': isOpen,
-                hidden: !isOpen,
-              },
-            )}
-          >
-            {NavItems.map((item) => (
-              <GlobalNavItem key={item.slug} item={item} close={close} />
-            ))}
-          </nav>
-        </div>
-        <div className="flex flex-1 items-center justify-end gap-x-4">
-          <Button variant="clear" className="-m-2" disabled>
-            <span className="sr-only">View notifications</span>
-            <BellIcon className="h-6 w-6" aria-hidden="true" />
-          </Button>
-          <Button
-            variant="clear"
-            className="-m-2 md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <span className="sr-only">Open main menu</span>
-            {isOpen ? (
-              <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-            ) : (
-              <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-            )}
-          </Button>
-        </div>
-      </div>
-    </header>
+      </header>
+      <SlidePanel
+        show={isOpen}
+        onClose={close}
+        className="bg-theme-neutral-350"
+      >
+        <nav>
+          {NAV_ITEMS.map((item) => (
+            <GlobalNavItem key={item.slug} item={item} close={close} />
+          ))}
+        </nav>
+      </SlidePanel>
+    </>
   );
 }
 
 function GlobalNavItem({
-  item: { name, slug, icon, disabled },
+  item: { name, slug, icon: Icon, disabled },
   close,
 }: {
   item: NavItem;
   close: () => void;
 }) {
-  const Icon = icon;
   const segment = useSelectedLayoutSegment();
   const active = slug === segment;
-  const selectable = !disabled && !active;
 
   return (
     <Link
       aria-disabled={disabled}
+      aria-selected={active}
       href={`/${slug}`}
       className={clsx(
         '-mx-3 my-1.5 flex place-items-center gap-3 rounded-md p-3 text-base leading-7 md:gap-1.5',
         {
-          'text-hover-disabled cursor-default': disabled,
-          'hover:bg-theme-neutral-300/20 text-hover-active': selectable,
+          'text-active bg-theme-neutral-300/20': active,
           'font-normal': !active,
-          'text-active font-medium': active,
+          'text-hover-disabled cursor-default': disabled,
+          'text-hover-active hover:bg-theme-neutral-300/20': !disabled,
         },
       )}
       onClick={(e) => {
