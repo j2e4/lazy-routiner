@@ -1,20 +1,25 @@
 import clsx from 'clsx';
-import HoverableProvider from 'src/contexts/hoverable/hoverable-provider';
-import { CallableChildren } from 'types/props';
-import { useHoverable } from 'src/hooks/useHoverable';
 import React from 'react';
+import HoverableProvider from 'src/contexts/hoverable/hoverable-provider';
+import { useHoverable } from 'src/hooks/useHoverable';
+import { CallableChildren } from 'types/props';
 
 type ListRootProps = React.PropsWithChildren<{
   border: 't' | 'b' | 'y';
+  className?: string;
 }>;
-function ListRoot({ border = 'y', children }: ListRootProps) {
+function ListRoot({ border = 'y', children, className }: ListRootProps) {
   return (
     <ul
-      className={clsx('divide-y border-gray-200', {
-        'border-t': border === 't',
-        'border-b': border === 'b',
-        'border-y': border === 'y',
-      })}
+      className={clsx(
+        'divide-y overflow-y-auto border-gray-200',
+        {
+          'border-t': border === 't',
+          'border-b': border === 'b',
+          'border-y': border === 'y',
+        },
+        className,
+      )}
     >
       {children}
     </ul>
@@ -23,14 +28,19 @@ function ListRoot({ border = 'y', children }: ListRootProps) {
 
 type ListItemProps = React.PropsWithChildren<{
   hoverable?: boolean;
+  className?: string;
 }>;
-function ListItem({ children, hoverable = false }: ListItemProps) {
+function ListItem({ children, className, hoverable = false }: ListItemProps) {
   return (
     <HoverableProvider hoverable={hoverable}>
       <li
-        className={clsx('flex px-3.5 py-5 md:px-8', {
-          'relative hover:bg-gray-50': hoverable,
-        })}
+        className={clsx(
+          'flex px-3.5 py-5 md:px-8',
+          {
+            'relative hover:bg-gray-50': hoverable,
+          },
+          className,
+        )}
       >
         {children}
       </li>
@@ -39,7 +49,7 @@ function ListItem({ children, hoverable = false }: ListItemProps) {
 }
 
 type ListItemBodyProps = {
-  children:
+  children?:
     | React.ReactNode
     | CallableChildren<{ Filler: () => React.ReactNode }>;
 };
