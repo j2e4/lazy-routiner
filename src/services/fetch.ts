@@ -18,12 +18,17 @@ export function postFetch<ReqData>(path: string, body: ReqData) {
   });
 }
 
-export function putFetch<ReqData>(path: string, body: ReqData) {
+export function putFetch<ReqData>(
+  path: string,
+  body: ReqData,
+  options?: Omit<RequestInit, 'method' | 'headers' | 'body'>,
+) {
   return fetch(API_URL + path, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
+    ...options,
   });
 }

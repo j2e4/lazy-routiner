@@ -2,7 +2,6 @@ import { revalidateTag } from 'next/cache';
 import { permanentRedirect } from 'next/navigation';
 import RoutineCategoryForm from 'src/app/category/form';
 import { getFetch, putFetch } from 'src/services/fetch';
-import { CategoryTheme } from 'types/category';
 
 export default async function RoutineCategoryUpdatePage({
   params: { id },
@@ -17,11 +16,19 @@ export default async function RoutineCategoryUpdatePage({
   async function update(formData: FormData) {
     'use server';
 
-    const response = await putFetch(`/category/${id}`, {
-      id,
-      name: formData.get('routiner-category-name') as string,
-      theme: formData.get('routiner-routine-category') as CategoryTheme,
-    });
+    const response = await putFetch(
+      `/category/${id}`,
+      {
+        id,
+        name: formData.get('routiner-category-name'),
+        theme: formData.get('routiner-routine-category'),
+      },
+      {
+        next: {
+          tags: ['category', id],
+        },
+      },
+    );
 
     if (response.ok) {
       revalidateTag(id);
