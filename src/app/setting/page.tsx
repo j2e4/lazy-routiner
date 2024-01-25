@@ -13,7 +13,11 @@ import { getFetch } from 'src/services/fetch';
 import { Category } from 'types/category';
 
 function getList(): Promise<Category[]> {
-  return getFetch('/category');
+  return getFetch('/category', {
+    next: {
+      tags: ['categories'],
+    },
+  });
 }
 
 export default function SettingRootPage() {

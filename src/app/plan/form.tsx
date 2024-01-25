@@ -53,9 +53,11 @@ export default function RoutinePlanForm({
     ].every((valid) => valid);
   };
 
-  const handleSubmit = () => {
-    const valid = validate();
-    if (!valid) return;
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (!validate()) {
+      e.preventDefault();
+      return;
+    }
 
     const repeatDays: number[] = [];
     for (const day in days.value)

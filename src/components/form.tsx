@@ -4,15 +4,10 @@ import Button from 'src/components/button';
 
 function FormRoot({
   children,
-  onSubmit,
+  ...props
 }: React.PropsWithChildren<React.FormHTMLAttributes<HTMLFormElement>>) {
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (onSubmit !== undefined) onSubmit(e);
-      }}
-    >
+    <form {...props}>
       <div className="space-y-8 px-10 pt-8">{children}</div>
     </form>
   );
@@ -100,7 +95,7 @@ function FormLegend(
 ) {
   return (
     <legend
-      className="text-sm font-semibold leading-6 text-gray-900"
+      className="text-sm font-medium leading-6 text-gray-900"
       ref={ref}
       {...props}
     >
