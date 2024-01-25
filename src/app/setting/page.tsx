@@ -1,26 +1,34 @@
 'use client';
 
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Badge, { BadgeVariant } from 'src/components/badge';
+import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import Dialog from 'src/components/dialog';
 import List from 'src/components/list';
+import { getFetch } from 'src/services/fetch';
+import { Category } from 'types/category';
 
-const MOCK_DATA: {
-  id: string;
-  name: string;
-  variant: BadgeVariant;
-}[] = [
-  { id: '1', variant: 'blue', name: '생활' },
-  { id: '2', variant: 'yellow', name: '상식' },
-];
+function getList(): Promise<Category[]> {
+  return getFetch('/category', {
+    next: {
+      tags: ['categories'],
+    },
+  });
+}
 
 export default function SettingRootPage() {
   const router = useRouter();
   const [categoryListOpened, setCategoryListOpened] = useState(false);
+
+  const { data: categories = [], isPending } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getList,
+    enabled: categoryListOpened,
+  });
 
   return (
     <main>
@@ -47,13 +55,19 @@ export default function SettingRootPage() {
       </List>
       <Dialog open={categoryListOpened} onClose={setCategoryListOpened}>
         <Dialog.Header as="h3">루틴 카테고리 관리</Dialog.Header>
-        <List border="y">
-          {MOCK_DATA.map((category) => (
+        <List border="y" className="h-48">
+          {isPending &&
+            Array.from({ length: 3 }, (_, i) => `pulse-${i}`).map((v) => (
+              <List.Item key={v} className="h-16 animate-pulse">
+                <List.ItemBody className="my-1.5 h-3 rounded-lg bg-slate-200" />
+              </List.Item>
+            ))}
+          {categories.map((category) => (
             <List.Item key={category.id} hoverable>
               <List.ItemBody>
                 {({ Filler }) => (
                   <Link href={`/category/${category.id}`}>
-                    <Badge variant={category.variant}>{category.name}</Badge>
+                    <Badge variant={category.theme}>{category.name}</Badge>
                     <Filler />
                   </Link>
                 )}

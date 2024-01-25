@@ -1,3 +1,6 @@
+'use client';
+
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import Badge, { BADGE_STYLES, BadgeVariant } from 'src/components/badge';
@@ -5,18 +8,18 @@ import Button from 'src/components/button';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useInputReducer } from 'src/hooks/useInputReducer';
-import { CategoryInput, CategoryTheme } from 'types/category';
+import { Category, CategoryTheme } from 'types/category';
 
 const PLACEHOLDER = '건강';
 const BADGE_VARIANTS = Object.keys(BADGE_STYLES) as BadgeVariant[];
 
 type RoutineCategoryFormProps = {
-  category?: CategoryInput;
-  onSubmit: (input: CategoryInput) => void;
-};
+  category?: Category;
+} & React.FormHTMLAttributes<HTMLFormElement>;
 export default function RoutineCategoryForm({
   category,
   onSubmit,
+  ...props
 }: RoutineCategoryFormProps) {
   const router = useRouter();
 
@@ -49,19 +52,21 @@ export default function RoutineCategoryForm({
     ].every((valid) => valid);
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
-      onSubmit({
-        id: category?.id,
-        name: name.value,
-        theme: theme.value,
-      });
-      router.back();
+  const queryClient = useQueryClient();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (!validate()) {
+      e.preventDefault();
+      return;
     }
+
+    await queryClient.invalidateQueries({
+      queryKey: ['categories'],
+    });
+    if (onSubmit !== undefined) onSubmit(e);
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} {...props}>
       <div>
         <Form.Label
           htmlFor="routiner-category-name"

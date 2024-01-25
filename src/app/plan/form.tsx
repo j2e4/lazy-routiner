@@ -8,8 +8,8 @@ import { Category } from 'types/category';
 import { RoutineInput } from 'types/routine';
 
 const MOCK_DATA: Category[] = [
-  { id: '1', theme: 'blue', name: '생활' },
-  { id: '2', theme: 'yellow', name: '상식' },
+  { id: '1', theme: 'BLUE', name: '생활' },
+  { id: '2', theme: 'YELLOW', name: '상식' },
 ];
 
 type RoutinePlanFormProps = {
@@ -53,9 +53,11 @@ export default function RoutinePlanForm({
     ].every((valid) => valid);
   };
 
-  const handleSubmit = () => {
-    const valid = validate();
-    if (!valid) return;
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (!validate()) {
+      e.preventDefault();
+      return;
+    }
 
     const repeatDays: number[] = [];
     for (const day in days.value)
