@@ -1,28 +1,31 @@
+'use client';
+
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useInputReducer } from 'src/hooks/useInputReducer';
-import { Category } from 'types/category';
+import { getCategories } from 'src/services/server-state/category';
 import { RoutineInput } from 'types/routine';
-
-const MOCK_DATA: Category[] = [
-  { id: '1', theme: 'BLUE', name: '생활' },
-  { id: '2', theme: 'YELLOW', name: '상식' },
-];
 
 type RoutinePlanFormProps = {
   routine?: RoutineInput;
-  onSubmit: (input: RoutineInput) => void;
-};
+} & React.FormHTMLAttributes<HTMLFormElement>;
 export default function RoutinePlanForm({
   routine,
   onSubmit,
+  ...props
 }: RoutinePlanFormProps) {
   const router = useRouter();
 
-  const initialCategory = routine?.categoryId || MOCK_DATA[0].id;
+  const { data: categories = [], isPending } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  });
+
+  const initialCategory = routine?.categoryId || categories[0]?.id || '';
   const initialDays: { [key: number]: boolean } = {};
   const initialName = routine?.name || '';
   routine?.repeatDays.forEach((day) => (initialDays[day] = true));
@@ -53,28 +56,21 @@ export default function RoutinePlanForm({
     ].every((valid) => valid);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const queryClient = useQueryClient();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (!validate()) {
       e.preventDefault();
       return;
     }
 
-    const repeatDays: number[] = [];
-    for (const day in days.value)
-      if (days.value[day]) {
-        repeatDays.push(+day);
-      }
-
-    onSubmit({
-      name: name.value,
-      repeatDays,
-      categoryId: category.value,
+    await queryClient.invalidateQueries({
+      queryKey: ['routines'],
     });
-    router.back();
+    if (onSubmit !== undefined) onSubmit(e);
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} {...props}>
       <fieldset>
         <Form.Legend ref={categoryDispatcher.setRef}>루틴 카테고리</Form.Legend>
         <Toast
@@ -88,19 +84,24 @@ export default function RoutinePlanForm({
           하나 이상 선택해야 해요.
         </Toast>
         <div className="mt-4 space-y-4">
-          {MOCK_DATA.map((badge) => (
-            <div key={badge.id} className="flex items-center gap-x-3">
+          {isPending && (
+            <div className="animate-pulse">
+              <div className="h-3 rounded-lg bg-slate-200" />
+            </div>
+          )}
+          {categories.map(({ id, name, theme }) => (
+            <div key={id} className="flex items-center gap-x-3">
               <Form.InputRadio
-                id={badge.id}
-                name="category"
-                value={badge.id}
-                checked={category.value === badge.id}
+                id={id}
+                name="routiner-category-id"
+                value={id}
+                checked={category.value === id}
                 onChange={(e) => {
                   categoryDispatcher.change(e.target.value);
                 }}
               />
-              <Form.Label htmlFor={badge.id}>
-                <Badge variant={badge.theme}>{badge.name}</Badge>
+              <Form.Label htmlFor={id}>
+                <Badge variant={theme}>{name}</Badge>
               </Form.Label>
             </div>
           ))}
@@ -126,7 +127,7 @@ export default function RoutinePlanForm({
               <div className="flex h-6 items-center">
                 <Form.InputCheckbox
                   id={d}
-                  name={d}
+                  name="routiner-repeat-days"
                   value={i}
                   checked={days.value[i] || false}
                   onChange={({ target: { value, checked } }) => {

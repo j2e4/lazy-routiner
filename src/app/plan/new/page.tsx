@@ -1,16 +1,25 @@
-'use client';
-
+import { permanentRedirect } from 'next/navigation';
 import RoutinePlanForm from 'src/app/plan/form';
-import { RoutineInput } from 'types/routine';
+import { postFetch } from 'src/services/fetch';
 
 export default function RoutinePlanCreatePage() {
-  const handleSubmit = (input: RoutineInput) => {
-    console.log('create', input);
-  };
+  async function create(formData: FormData) {
+    'use server';
+
+    const response = await postFetch('/routine', {
+      name: formData.get('routiner-routine-name'),
+      repeatDays: formData.getAll('routiner-repeat-days').map(Number),
+      categoryId: formData.get('routiner-category-id'),
+    });
+
+    if (response.ok) {
+      permanentRedirect('/plan');
+    } else throw new Error(await response.json());
+  }
 
   return (
     <main>
-      <RoutinePlanForm onSubmit={handleSubmit} />
+      <RoutinePlanForm action={create} />
     </main>
   );
 }
