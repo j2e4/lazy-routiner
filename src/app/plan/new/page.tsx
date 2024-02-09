@@ -11,7 +11,6 @@ export default function RoutinePlanCreatePage() {
       repeatDays: formData.getAll('routiner-repeat-days').map(Number),
       categoryId: formData.get('routiner-category-id'),
     });
-
     if (response.ok) {
       permanentRedirect('/plan');
     } else throw new Error(await response.json());
@@ -19,7 +18,10 @@ export default function RoutinePlanCreatePage() {
 
   return (
     <main>
-      <RoutinePlanForm action={create} />
+      <RoutinePlanForm
+        action={create}
+        initialCategoryId={process.env.DEFAULT_CATEGORY_ID || ''}
+      />
     </main>
   );
 }

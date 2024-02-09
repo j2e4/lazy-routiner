@@ -8,12 +8,14 @@ import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useInputReducer } from 'src/hooks/useInputReducer';
 import { getCategories } from 'src/services/server-state/category';
-import { RoutineInput } from 'types/routine';
+import { Routine } from 'types/routine';
 
 type RoutinePlanFormProps = {
-  routine?: RoutineInput;
+  initialCategoryId: string;
+  routine?: Routine;
 } & React.FormHTMLAttributes<HTMLFormElement>;
 export default function RoutinePlanForm({
+  initialCategoryId,
   routine,
   onSubmit,
   ...props
@@ -25,7 +27,6 @@ export default function RoutinePlanForm({
     queryFn: getCategories,
   });
 
-  const initialCategory = routine?.categoryId || categories[0]?.id || '';
   const initialDays: { [key: number]: boolean } = {};
   const initialName = routine?.name || '';
   routine?.repeatDays.forEach((day) => (initialDays[day] = true));
@@ -33,7 +34,7 @@ export default function RoutinePlanForm({
   const [category, categoryDispatcher] = useInputReducer<
     string,
     HTMLLegendElement
-  >(initialCategory);
+  >(initialCategoryId);
   const [days, daysDispatcher] = useInputReducer<
     { [key: number]: boolean },
     HTMLLegendElement
