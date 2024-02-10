@@ -1,49 +1,64 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/20/solid';
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import Badge, { BadgeVariant } from 'src/components/badge';
+import { useRouter } from 'next/navigation';
+import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import List from 'src/components/list';
+import { getFetch } from 'src/services/fetch';
+import { Routine } from 'types/routine';
 
-const MOCK_DATA: {
-  id: string;
-  name: string;
-  badge: { name: string; variant: BadgeVariant };
-}[] = [
-  {
-    id: '1',
-    name: '챌린저스 기상 미션하기',
-    badge: { variant: 'BLUE', name: '생활' },
-  },
-  {
-    id: '2',
-    name: '뉴스레터 읽기',
-    badge: { variant: 'YELLOW', name: '상식' },
-  },
-];
+enum ExclusiveCase {
+  Pending,
+  Empty,
+}
 
-export default function PlanRoutine() {
+function getList(): Promise<Routine[]> {
+  return getFetch('/routine', {
+    next: {
+      tags: ['routines'],
+    },
+  });
+}
+
+export default function PlanRoutineRootPage() {
   const router = useRouter();
+
+  const { data: routines = [], isPending } = useQuery({
+    queryKey: ['routines'],
+    queryFn: getList,
+  });
+  const thisCase = [isPending, routines.length === 0].findIndex((v) => v);
 
   return (
     <main>
       <List border="b">
-        {/*TODO*/}
-        {false && (
+        {thisCase === ExclusiveCase.Pending && (
+          <List.Item className="animate-pulse">
+            <List.ItemBody className="my-1 space-y-5">
+              <List.ItemBodyText className="h-3 rounded-lg bg-slate-200" />
+              <List.ItemBodyText className="h-3 rounded-lg bg-slate-200" />
+            </List.ItemBody>
+            <List.ItemTail className="my-auto h-4 w-8 rounded-lg bg-slate-200" />
+          </List.Item>
+        )}
+        {thisCase === ExclusiveCase.Empty && (
           <List.Item>
-            <List.ItemBody className="text-center">
-              <List.ItemBodyText>등록한 루틴이 없어요.</List.ItemBodyText>
+            <List.ItemBody>
+              <List.ItemBodyText className="flex h-full items-center justify-center">
+                등록한 루틴이 없어요.
+              </List.ItemBodyText>
             </List.ItemBody>
           </List.Item>
         )}
-        {MOCK_DATA.map(({ badge, ...routine }) => (
+        {routines.map(({ category, ...routine }) => (
           <List.Item key={routine.id} hoverable>
             <List.ItemBody>
               {({ Filler }) => (
                 <>
-                  <Badge variant={badge.variant}>{badge.name}</Badge>
+                  <Badge variant={category.theme}>{category.name}</Badge>
                   <List.ItemBodyText
                     as={Link}
                     href={`/plan/${routine.id}`}

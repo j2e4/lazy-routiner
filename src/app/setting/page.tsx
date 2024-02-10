@@ -9,16 +9,7 @@ import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import Dialog from 'src/components/dialog';
 import List from 'src/components/list';
-import { getFetch } from 'src/services/fetch';
-import { Category } from 'types/category';
-
-function getList(): Promise<Category[]> {
-  return getFetch('/category', {
-    next: {
-      tags: ['categories'],
-    },
-  });
-}
+import { getCategories } from 'src/services/server-state/category';
 
 export default function SettingRootPage() {
   const router = useRouter();
@@ -26,7 +17,7 @@ export default function SettingRootPage() {
 
   const { data: categories = [], isPending } = useQuery({
     queryKey: ['categories'],
-    queryFn: getList,
+    queryFn: getCategories,
     enabled: categoryListOpened,
   });
 
