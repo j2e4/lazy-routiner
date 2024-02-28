@@ -46,16 +46,14 @@ export default function RoutineToday() {
             </List.ItemBody>
             <List.ItemTail className="flex items-center space-x-1">
               <Dropdown>
-                <Dropdown.Button
-                  variant="secondary"
-                  size="sm"
-                  rounded
-                  screenReader="Update whether this routine is done or not"
-                >
+                <Dropdown.Button variant="secondary" size="sm">
                   <CheckIcon
                     className="h-3.5 w-3.5 text-gray-400"
                     aria-hidden="true"
                   />
+                  <span className="sr-only">
+                    Update whether this routine is done or not
+                  </span>
                 </Dropdown.Button>
                 <Dropdown.Menu>
                   {['완료하기', '오늘은 건너뛰기', '오늘 안 하기'].map(
@@ -68,16 +66,12 @@ export default function RoutineToday() {
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown>
-                <Dropdown.Button
-                  variant="secondary"
-                  size="sm"
-                  rounded
-                  screenReader="Manage this routine"
-                >
+                <Dropdown.Button variant="secondary" size="sm">
                   <EllipsisVerticalIcon
                     className="h-3.5 w-3.5 text-gray-400"
                     aria-hidden="true"
                   />
+                  <span className="sr-only">Manage this routine</span>
                 </Dropdown.Button>
                 <Dropdown.Menu>
                   <Dropdown.LinkItem href={`/plan/${routine.id}`}>

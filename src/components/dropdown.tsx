@@ -85,9 +85,7 @@ function DropdownButtonItem({
     <DropdownItemRoot disabled={disabled}>
       <Button
         variant="clear"
-        size="unset"
-        className="dropdown-item cursor- text-left"
-        fullWidth
+        className="dropdown-item w-full text-left"
         disabled={disabled}
         {...props}
       >

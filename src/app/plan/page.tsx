@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRightIcon, PlusIcon } from '@heroicons/react/20/solid';
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -76,12 +76,15 @@ export default function PlanRoutineRootPage() {
           </List.Item>
         ))}
       </List>
-      <Button
-        className="absolute bottom-0 right-0 m-4 rounded-full p-4"
-        onClick={() => router.push('/plan/new')}
-      >
-        <PlusIcon className="h-8 w-8" />
-      </Button>
+      <div className="my-5 text-center">
+        <Button
+          variant="secondary"
+          size="md"
+          onClick={() => router.push('/plan/new')}
+        >
+          새 루틴 추가하기
+        </Button>
+      </div>
     </main>
   );
 }
