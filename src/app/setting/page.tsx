@@ -71,8 +71,8 @@ export default function SettingRootPage() {
         </List>
         <Dialog.Footer className="mt-6 space-x-3 text-right">
           <Button
-            rounded
-            size="wmd"
+            size="md"
+            variant="primary"
             onClick={() => {
               router.push('/category/new');
             }}
@@ -80,8 +80,7 @@ export default function SettingRootPage() {
             추가
           </Button>
           <Button
-            rounded
-            size="wmd"
+            size="md"
             variant="secondary"
             onClick={() => {
               setCategoryListOpened(false);

@@ -45,13 +45,14 @@ export default function GlobalNavbar() {
             {/* TODO buttons like go back */}
           </div>
           <div className="flex flex-1 items-center justify-end gap-x-4">
-            <Button variant="clear" className="-m-2" disabled>
+            <Button size="md" variant="clear" className="-mx-3 -my-2" disabled>
               <span className="sr-only">View notifications</span>
               <BellIcon className="h-6 w-6" aria-hidden="true" />
             </Button>
             <Button
+              size="md"
               variant="clear"
-              className="-m-2"
+              className="-mx-3 -my-2"
               onClick={() => setIsOpen(!isOpen)}
             >
               <span className="sr-only">Toggle main menu open</span>

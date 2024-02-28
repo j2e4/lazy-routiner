@@ -169,12 +169,7 @@ export default function RoutinePlanForm({
         />
       </div>
       <Form.Footer>
-        <Button
-          variant="secondary"
-          size="wmd"
-          rounded
-          onClick={() => router.back()}
-        >
+        <Button size="md" variant="secondary" onClick={() => router.back()}>
           취소
         </Button>
       </Form.Footer>

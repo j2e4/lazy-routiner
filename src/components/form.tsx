@@ -115,7 +115,7 @@ function FormFooter({ children }: React.PropsWithChildren) {
         )}
       >
         {children}
-        <Button type="submit" variant="primary" size="wmd" rounded>
+        <Button type="submit" size="md" variant="primary">
           저장
         </Button>
       </div>
