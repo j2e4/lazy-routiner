@@ -10,6 +10,16 @@ import { useInputReducer } from 'src/hooks/useInputReducer';
 import { getCategories } from 'src/services/server-state/category';
 import { Routine } from 'types/routine';
 
+const RepeatDays = [
+  { key: 'sun', label: '일', value: 7 },
+  { key: 'mon', label: '월', value: 1 },
+  { key: 'tue', label: '화', value: 2 },
+  { key: 'wed', label: '수', value: 3 },
+  { key: 'thu', label: '목', value: 4 },
+  { key: 'fri', label: '금', value: 5 },
+  { key: 'sat', label: '토', value: 6 },
+];
+
 type RoutinePlanFormProps = {
   initialCategoryId: string;
   routine?: Routine;
@@ -123,14 +133,14 @@ export default function RoutinePlanForm({
           하나 이상 선택해야 해요.
         </Toast>
         <div className="mt-4 grid grid-cols-4 gap-x-6 gap-y-4 sm:grid-cols-7">
-          {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
-            <div key={d} className="relative flex gap-x-3 sm:col-span-1">
+          {RepeatDays.map(({ key, label, value }) => (
+            <div key={key} className="relative flex gap-x-3 sm:col-span-1">
               <div className="flex h-6 items-center">
                 <Form.InputCheckbox
-                  id={d}
+                  id={key}
                   name="routiner-repeat-days"
-                  value={i}
-                  checked={days.value[i] || false}
+                  value={value}
+                  checked={days.value[value] || false}
                   onChange={({ target: { value, checked } }) => {
                     daysDispatcher.change({
                       ...days.value,
@@ -139,7 +149,7 @@ export default function RoutinePlanForm({
                   }}
                 />
               </div>
-              <Form.Label htmlFor={d}>{d}</Form.Label>
+              <Form.Label htmlFor={key}>{label}</Form.Label>
             </div>
           ))}
         </div>
