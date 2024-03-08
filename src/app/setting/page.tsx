@@ -46,7 +46,7 @@ export default function SettingRootPage() {
       </List>
       <Dialog open={categoryListOpened} onClose={setCategoryListOpened}>
         <Dialog.Header as="h3">루틴 카테고리 관리</Dialog.Header>
-        <List border="y" className="h-48">
+        <List border="y" className="h-48 overflow-y-auto">
           {isPending &&
             Array.from({ length: 3 }, (_, i) => `pulse-${i}`).map((v) => (
               <List.Item key={v} className="h-16 animate-pulse">
