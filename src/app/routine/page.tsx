@@ -1,33 +1,63 @@
 'use client';
 
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import Badge, { BadgeVariant } from 'src/components/badge';
+import { useQuery } from '@tanstack/react-query';
+import Badge from 'src/components/badge';
 import Dropdown from 'src/components/dropdown';
 import List from 'src/components/list';
+import { getFetch, postFetch } from 'src/services/fetch';
+import { toDateStr } from 'src/utils/date-str';
+import { ToCheckRoutine } from 'types/routine';
 
-const MOCK_DATA: {
-  id: string;
-  name: string;
-  badge: { name: string; variant: BadgeVariant };
-}[] = [
-  {
-    id: '1',
-    name: '챌린저스 기상 미션하기',
-    badge: { variant: 'BLUE', name: '생활' },
-  },
-  {
-    id: '2',
-    name: '뉴스레터 읽기',
-    badge: { variant: 'YELLOW', name: '상식' },
-  },
+const ROUTINE_CHECKS = [
+  { text: '완료하기', value: 1 },
+  { text: '오늘은 건너뛰기', value: 2 },
+  { text: '오늘 안 하기', value: 3 },
 ];
 
+function getList(date: string): Promise<ToCheckRoutine[]> {
+  return getFetch(`/daily?date=${date}`, {
+    next: {
+      tags: ['daily_routines'],
+    },
+  });
+}
+
 export default function RoutineToday() {
+  const reqDateStr = toDateStr(new Date());
+  const {
+    data = [],
+    isPending,
+    isSuccess,
+    refetch,
+  } = useQuery({
+    queryKey: ['daily_routines'],
+    queryFn: () => getList(reqDateStr),
+  });
+  const routines = data.filter((routine) => Number(routine.routineCheck) === 0);
+  const isEmpty = isSuccess && routines.length === 0;
+
+  const update = async (routineId: string, routineCheck: number) => {
+    const response = await postFetch('/history', {
+      routineId,
+      routineCheck,
+    });
+    if (response.ok) await refetch();
+  };
+
   return (
     <main>
       <List border="b">
-        {/*TODO*/}
-        {false && (
+        {isPending && (
+          <List.Item>
+            <List.ItemBody className="text-center">
+              <List.ItemBodyText>
+                오늘 실천할 루틴을 불러오는 중이에요.
+              </List.ItemBodyText>
+            </List.ItemBody>
+          </List.Item>
+        )}
+        {isEmpty && (
           <List.Item>
             <List.ItemBody className="text-center">
               <List.ItemBodyText>
@@ -36,10 +66,10 @@ export default function RoutineToday() {
             </List.ItemBody>
           </List.Item>
         )}
-        {MOCK_DATA.map(({ badge, ...routine }) => (
+        {routines.map(({ category, ...routine }) => (
           <List.Item key={routine.id}>
             <List.ItemBody>
-              <Badge variant={badge.variant}>{badge.name}</Badge>
+              <Badge variant={category.theme}>{category.name}</Badge>
               <List.ItemBodyText className="mt-1 block">
                 {routine.name}
               </List.ItemBodyText>
@@ -56,13 +86,14 @@ export default function RoutineToday() {
                   </span>
                 </Dropdown.Button>
                 <Dropdown.Menu>
-                  {['완료하기', '오늘은 건너뛰기', '오늘 안 하기'].map(
-                    (name) => (
-                      <Dropdown.ButtonItem key={name}>
-                        {name}
-                      </Dropdown.ButtonItem>
-                    ),
-                  )}
+                  {ROUTINE_CHECKS.map(({ text, value }) => (
+                    <Dropdown.ButtonItem
+                      key={text}
+                      onClick={() => update(routine.id, value)}
+                    >
+                      {text}
+                    </Dropdown.ButtonItem>
+                  ))}
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown>
