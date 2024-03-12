@@ -12,7 +12,7 @@ function ListRoot({ border = 'y', children, className }: ListRootProps) {
   return (
     <ul
       className={clsx(
-        'divide-y overflow-y-auto border-gray-200',
+        'divide-y border-gray-200',
         {
           'border-t': border === 't',
           'border-b': border === 'b',

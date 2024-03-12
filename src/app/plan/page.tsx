@@ -10,11 +10,6 @@ import List from 'src/components/list';
 import { getFetch } from 'src/services/fetch';
 import { Routine } from 'types/routine';
 
-enum ExclusiveCase {
-  Pending,
-  Empty,
-}
-
 function getList(): Promise<Routine[]> {
   return getFetch('/routine', {
     next: {
@@ -26,25 +21,29 @@ function getList(): Promise<Routine[]> {
 export default function PlanRoutineRootPage() {
   const router = useRouter();
 
-  const { data: routines = [], isPending } = useQuery({
+  const {
+    data: routines = [],
+    isPending,
+    isSuccess,
+  } = useQuery({
     queryKey: ['routines'],
     queryFn: getList,
   });
-  const thisCase = [isPending, routines.length === 0].findIndex((v) => v);
+  const isEmpty = isSuccess && routines.length === 0;
 
   return (
     <main>
       <List border="b">
-        {thisCase === ExclusiveCase.Pending && (
-          <List.Item className="animate-pulse">
-            <List.ItemBody className="my-1 space-y-5">
-              <List.ItemBodyText className="h-3 rounded-lg bg-slate-200" />
-              <List.ItemBodyText className="h-3 rounded-lg bg-slate-200" />
+        {isPending && (
+          <List.Item>
+            <List.ItemBody>
+              <List.ItemBodyText className="flex h-full items-center justify-center">
+                루틴을 불러오는 중이에요.
+              </List.ItemBodyText>
             </List.ItemBody>
-            <List.ItemTail className="my-auto h-4 w-8 rounded-lg bg-slate-200" />
           </List.Item>
         )}
-        {thisCase === ExclusiveCase.Empty && (
+        {isEmpty && (
           <List.Item>
             <List.ItemBody>
               <List.ItemBodyText className="flex h-full items-center justify-center">
@@ -76,7 +75,7 @@ export default function PlanRoutineRootPage() {
           </List.Item>
         ))}
       </List>
-      <div className="my-5 text-center">
+      <div className="py-5 text-center">
         <Button
           variant="secondary"
           size="md"

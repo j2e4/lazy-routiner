@@ -6,3 +6,10 @@ export type Routine = {
   repeatDays: number[];
   category: Category;
 };
+
+export type ToCheckRoutine = {
+  id: string;
+  name: string;
+  routineCheck: number | null;
+  category: Category;
+};
