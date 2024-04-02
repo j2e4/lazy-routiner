@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useState } from 'react';
 import Button from 'src/components/button';
-import SlidePanel from 'src/components/slide-panel';
+import SlideBar from 'src/components/slide-bar';
 
 type NavItem = {
   name: string;
@@ -65,17 +65,13 @@ export default function GlobalNavbar() {
           </div>
         </div>
       </header>
-      <SlidePanel
-        show={isOpen}
-        onClose={close}
-        className="bg-theme-neutral-350"
-      >
+      <SlideBar show={isOpen} onClose={close} className="bg-theme-neutral-350">
         <nav>
           {NAV_ITEMS.map((item) => (
             <GlobalNavItem key={item.slug} item={item} close={close} />
           ))}
         </nav>
-      </SlidePanel>
+      </SlideBar>
     </>
   );
 }
