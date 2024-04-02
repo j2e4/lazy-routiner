@@ -3,7 +3,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
-import Button from 'src/components/button';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useInputReducer } from 'src/hooks/useInputReducer';
@@ -81,7 +80,7 @@ export default function RoutinePlanForm({
   };
 
   return (
-    <Form onSubmit={handleSubmit} {...props}>
+    <Form onCancel={router.back} onSubmit={handleSubmit} {...props}>
       <fieldset>
         <Form.Legend ref={categoryDispatcher.setRef}>루틴 카테고리</Form.Legend>
         <Toast
@@ -178,11 +177,6 @@ export default function RoutinePlanForm({
           }}
         />
       </div>
-      <Form.Footer>
-        <Button size="md" variant="secondary" onClick={() => router.back()}>
-          취소
-        </Button>
-      </Form.Footer>
     </Form>
   );
 }
