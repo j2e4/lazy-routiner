@@ -4,7 +4,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import Badge, { BADGE_STYLES, BadgeVariant } from 'src/components/badge';
-import Button from 'src/components/button';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useInputReducer } from 'src/hooks/useInputReducer';
@@ -66,7 +65,7 @@ export default function RoutineCategoryForm({
   };
 
   return (
-    <Form onSubmit={handleSubmit} {...props}>
+    <Form onCancel={router.back} onSubmit={handleSubmit} {...props}>
       <div>
         <Form.Label
           htmlFor="routiner-category-name"
@@ -126,11 +125,6 @@ export default function RoutineCategoryForm({
           하나 이상 선택해야 해요.
         </Toast>
       </fieldset>
-      <Form.Footer>
-        <Button size="md" variant="secondary" onClick={() => router.back()}>
-          취소
-        </Button>
-      </Form.Footer>
     </Form>
   );
 }

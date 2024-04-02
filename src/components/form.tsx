@@ -1,14 +1,19 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-import Button from 'src/components/button';
+import FormFooter from 'src/components/form-footer';
 
-function FormRoot({
-  children,
-  ...props
-}: React.PropsWithChildren<React.FormHTMLAttributes<HTMLFormElement>>) {
+type FormRootProps = React.PropsWithChildren<
+  React.FormHTMLAttributes<HTMLFormElement> & {
+    onCancel?: React.MouseEventHandler<HTMLButtonElement>;
+  }
+>;
+function FormRoot({ children, onCancel, ...props }: FormRootProps) {
   return (
     <form {...props}>
-      <div className="space-y-8 px-10 pt-8">{children}</div>
+      <div className="space-y-8 px-10 pt-8">
+        {children}
+        <FormFooter onCancel={onCancel} />
+      </div>
     </form>
   );
 }
@@ -101,25 +106,6 @@ function FormLegend(
     >
       {children}
     </legend>
-  );
-}
-
-function FormFooter({ children }: React.PropsWithChildren) {
-  return (
-    <>
-      <div className="h-20" aria-hidden="true" />
-      <div
-        className={clsx(
-          'absolute bottom-0 left-0 right-0 h-20 px-6',
-          'flex items-center justify-end gap-x-6 border-t border-gray-900/10',
-        )}
-      >
-        {children}
-        <Button type="submit" size="md" variant="primary">
-          저장
-        </Button>
-      </div>
-    </>
   );
 }
 
