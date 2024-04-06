@@ -1,4 +1,5 @@
 // https://nextjs.org/docs/app/building-your-application/testing/jest
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const nextJest = require('next/jest');
 const createJestConfig = nextJest({
   dir: './src',
