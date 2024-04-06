@@ -101,7 +101,7 @@ function ListItemBodyText<TTag extends React.ElementType = 'p'>({
 }
 
 type ListItemTailProps = React.PropsWithChildren<
-  React.HTMLAttributes<HTMLDivElement> & {}
+  React.HTMLAttributes<HTMLDivElement>
 >;
 function ListItemTail({ children, className }: ListItemTailProps) {
   return <div className={clsx('ml-6', className)}>{children}</div>;

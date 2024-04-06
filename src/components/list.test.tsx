@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import List from 'src/components/list';
-import HoverableProvider from 'src/contexts/hoverable/hoverable-provider';
 
 describe('List.Item', () => {
   it('without hoverable styles (default)', () => {
