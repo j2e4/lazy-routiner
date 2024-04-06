@@ -43,12 +43,7 @@ export default function Toast({
   // 안 보여야 하고 트랜지션 안 기다려도 되면 null
   if (!show && !trans) return null;
   return createPortal(
-    <div
-      role="alert"
-      ref={refs.setFloating}
-      style={floatingStyles}
-      className="z-50"
-    >
+    <div role="alert" ref={refs.setFloating} style={floatingStyles}>
       <Transition
         show={show}
         as={Fragment}
