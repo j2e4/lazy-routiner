@@ -1,13 +1,5 @@
-import React, { Fragment, useState } from 'react';
-import {
-  Dialog,
-  DialogProps,
-  DialogTitleProps,
-  MenuItemProps,
-  Transition,
-} from '@headlessui/react';
-import Button from 'src/components/button';
-import { CallableChildren } from 'types/props';
+import React, { Fragment } from 'react';
+import { Dialog, DialogTitleProps, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 
 type DialogRootProps = React.PropsWithChildren<{

@@ -9,7 +9,7 @@ import Toast from 'src/components/toast';
 type FormFooterProps = React.PropsWithChildren<{
   onCancel?: React.MouseEventHandler<HTMLButtonElement>;
 }>;
-function FormFooter({ onCancel, children }: FormFooterProps) {
+function FormFooter({ onCancel }: FormFooterProps) {
   const { pending } = useFormStatus();
   const [submitBtnRef, setSubmitBtnRef] = useState<HTMLButtonElement | null>(
     null,

@@ -27,7 +27,7 @@ export default function Toast({
   className,
   children,
 }: ToastProps) {
-  const { floatingStyles, y, refs } = useFloating({
+  const { floatingStyles, refs } = useFloating({
     placement: options.placement,
     middleware: [
       offset({
