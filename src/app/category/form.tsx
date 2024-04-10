@@ -2,10 +2,10 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
 import Badge, { BADGE_STYLES, BadgeVariant } from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
+import { useDebounce } from 'src/hooks/useDebounce';
 import { useInputReducer } from 'src/hooks/useInputReducer';
 import { Category, CategoryTheme } from 'types/category';
 
@@ -29,20 +29,10 @@ export default function RoutineCategoryForm({
     CategoryTheme,
     HTMLLegendElement
   >(category?.theme || BADGE_VARIANTS[0]);
-
-  const [preview, setPreview] = useState(category?.name || PLACEHOLDER);
-  const previewTimeoutId = useRef<NodeJS.Timeout>();
-
-  const handleChangeName = (value: string) => {
-    nameDispatcher.change(value);
-
-    if (previewTimeoutId.current !== undefined)
-      clearTimeout(previewTimeoutId.current);
-    previewTimeoutId.current = setTimeout(() => {
-      setPreview(value || PLACEHOLDER);
-      previewTimeoutId.current = undefined;
-    }, 300);
-  };
+  const [badgeText, setBadgeTextDebounced] = useDebounce(
+    category?.name || PLACEHOLDER,
+    300,
+  );
 
   const validate = () => {
     return [
@@ -79,7 +69,8 @@ export default function RoutineCategoryForm({
           value={name.value}
           className="mt-4"
           onChange={(e) => {
-            handleChangeName(e.target.value);
+            nameDispatcher.change(e.target.value);
+            setBadgeTextDebounced(e.target.value || PLACEHOLDER);
           }}
         />
         <Toast
@@ -109,7 +100,7 @@ export default function RoutineCategoryForm({
                 }}
               />
               <Form.Label htmlFor={badge}>
-                <Badge variant={badge}>{preview}</Badge>
+                <Badge variant={badge}>{badgeText}</Badge>
               </Form.Label>
             </div>
           ))}
