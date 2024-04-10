@@ -19,16 +19,18 @@ const RepeatDays = [
   { key: 'sat', label: '토', value: 6 },
 ];
 
-type RoutinePlanFormProps = {
+interface RoutinePlanFormProps
+  extends React.FormHTMLAttributes<HTMLFormElement> {
   initialCategoryId: string;
   routine?: Routine;
-} & React.FormHTMLAttributes<HTMLFormElement>;
+}
+type OmittedRoutinePlanFormProps = Omit<RoutinePlanFormProps, 'onSubmit'>;
+
 export default function RoutinePlanForm({
   initialCategoryId,
   routine,
-  onSubmit,
   ...props
-}: RoutinePlanFormProps) {
+}: OmittedRoutinePlanFormProps) {
   const router = useRouter();
 
   const { data: categories = [], isPending } = useQuery({
@@ -52,31 +54,19 @@ export default function RoutinePlanForm({
     initialName,
   );
 
-  const validate = () => {
-    return [
-      categoryDispatcher.validate((v) => v !== ''),
-      daysDispatcher.validate((v) => {
-        for (const day in v)
-          if (v[day]) {
-            return true;
-          }
-        return false;
-      }),
-      nameDispatcher.validate((v) => v !== ''),
-    ].every((valid) => valid);
-  };
-
   const queryClient = useQueryClient();
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!validate()) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const invalid = [
+      categoryDispatcher.validate((v) => v !== ''),
+      daysDispatcher.validate((v) => Object.values(v).some((b) => b)),
+      nameDispatcher.validate((v) => v !== ''),
+    ].some((b) => !b);
+
+    if (invalid) {
       e.preventDefault();
       return;
     }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['routines'],
-    });
-    if (onSubmit !== undefined) onSubmit(e);
+    return queryClient.invalidateQueries({ queryKey: ['routines'] });
   };
 
   return (

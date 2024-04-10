@@ -12,14 +12,19 @@ import { Category, CategoryTheme } from 'types/category';
 const PLACEHOLDER = '건강';
 const BADGE_VARIANTS = Object.keys(BADGE_STYLES) as BadgeVariant[];
 
-type RoutineCategoryFormProps = {
+interface RoutineCategoryFormProps
+  extends React.FormHTMLAttributes<HTMLFormElement> {
   category?: Category;
-} & React.FormHTMLAttributes<HTMLFormElement>;
+}
+type OmittedRoutineCategoryFormProps = Omit<
+  RoutineCategoryFormProps,
+  'onSubmit'
+>;
+
 export default function RoutineCategoryForm({
   category,
-  onSubmit,
   ...props
-}: RoutineCategoryFormProps) {
+}: OmittedRoutineCategoryFormProps) {
   const router = useRouter();
 
   const [name, nameDispatcher] = useInputReducer<string, HTMLLabelElement>(
@@ -34,24 +39,18 @@ export default function RoutineCategoryForm({
     300,
   );
 
-  const validate = () => {
-    return [
+  const queryClient = useQueryClient();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const invalid = [
       nameDispatcher.validate((v) => v !== ''),
       themeDispatcher.validate((v) => BADGE_VARIANTS.includes(v)),
-    ].every((valid) => valid);
-  };
+    ].some((b) => !b);
 
-  const queryClient = useQueryClient();
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!validate()) {
+    if (invalid) {
       e.preventDefault();
       return;
     }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['categories'],
-    });
-    if (onSubmit !== undefined) onSubmit(e);
+    return queryClient.invalidateQueries({ queryKey: ['categories'] });
   };
 
   return (
