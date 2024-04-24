@@ -33,14 +33,25 @@ const reducer = <T>(
   }
 };
 
+export enum VALIDATION_TYPE {
+  NOT_EMPTY_STRING,
+}
+const VALIDATE = {
+  [VALIDATION_TYPE.NOT_EMPTY_STRING]: <T>(v: T) => v !== '',
+};
+
 export function useInputReducer<T, E extends HTMLElement>(
   initialValue: T,
+  validation?: {
+    type?: VALIDATION_TYPE;
+    func?: (value: T) => boolean;
+  },
 ): [
   { ref: E | null } & State<T>,
   {
     setRef: React.Dispatch<React.SetStateAction<E | null>>;
     change: (value: T) => void;
-    validate: (fn: (value: T) => boolean) => boolean;
+    validate: () => boolean;
   },
 ] {
   const [ref, setRef] = useState<E | null>(null);
@@ -61,8 +72,13 @@ export function useInputReducer<T, E extends HTMLElement>(
           type: 'CHANGE_VALUE',
           value,
         }),
-      validate: (fn) => {
-        const valid = fn(state.value);
+      validate: () => {
+        let valid = true;
+        if (validation?.type !== undefined)
+          valid = VALIDATE[validation?.type](state.value);
+        if (validation?.func !== undefined)
+          valid = validation.func(state.value);
+
         dispatch({
           type: 'VALIDATE',
           value: state.value,

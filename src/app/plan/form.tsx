@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
-import { useInputReducer } from 'src/hooks/useInputReducer';
+import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
 import { getCategories } from 'src/services/server-state/category';
 import { Routine } from 'types/routine';
 
@@ -36,9 +36,15 @@ export default function RoutinePlanForm({
   const initialDays: { [key: number]: boolean } = {};
   routine?.repeatDays.forEach((day) => (initialDays[day] = true));
 
-  const [category, categoryDispatcher] = useInputReducer(initialCategoryId);
-  const [days, daysDispatcher] = useInputReducer(initialDays);
-  const [name, nameDispatcher] = useInputReducer(routine?.name || '');
+  const [category, categoryDispatcher] = useInputReducer(initialCategoryId, {
+    type: VALIDATION_TYPE.NOT_EMPTY_STRING,
+  });
+  const [days, daysDispatcher] = useInputReducer(initialDays, {
+    func: (v) => Object.values(v).some((b) => b),
+  });
+  const [name, nameDispatcher] = useInputReducer(routine?.name || '', {
+    type: VALIDATION_TYPE.NOT_EMPTY_STRING,
+  });
 
   const { data: categories = [], isPending } = useQuery({
     queryKey: ['categories'],
@@ -48,9 +54,9 @@ export default function RoutinePlanForm({
   const queryClient = useQueryClient();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const invalid = [
-      categoryDispatcher.validate((v) => v !== ''),
-      daysDispatcher.validate((v) => Object.values(v).some((b) => b)),
-      nameDispatcher.validate((v) => v !== ''),
+      categoryDispatcher.validate(),
+      daysDispatcher.validate(),
+      nameDispatcher.validate(),
     ].some((b) => !b);
 
     if (invalid) {

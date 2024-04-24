@@ -6,7 +6,7 @@ import Badge from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useDebounce } from 'src/hooks/useDebounce';
-import { useInputReducer } from 'src/hooks/useInputReducer';
+import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
 import { Category, CategoryTheme } from 'types/category';
 
 const PLACEHOLDER = '건강';
@@ -36,17 +36,22 @@ export default function RoutineCategoryForm({
 }: OmittedRoutineCategoryFormProps) {
   const router = useRouter();
 
-  const [name, nameDispatcher] = useInputReducer(category?.name || '');
+  const [name, nameDispatcher] = useInputReducer(category?.name || '', {
+    type: VALIDATION_TYPE.NOT_EMPTY_STRING,
+  });
   const [theme, themeDispatcher] = useInputReducer(
     category?.theme || CATEGORY_THEMES[0],
+    {
+      func: (v) => CATEGORY_THEMES.includes(v),
+    },
   );
   const [badgeText, setBadgeTextDebounced] = useDebounce(category?.name, 300);
 
   const queryClient = useQueryClient();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const invalid = [
-      nameDispatcher.validate((v) => v !== ''),
-      themeDispatcher.validate((v) => CATEGORY_THEMES.includes(v)),
+      nameDispatcher.validate(),
+      themeDispatcher.validate(),
     ].some((b) => !b);
 
     if (invalid) {
