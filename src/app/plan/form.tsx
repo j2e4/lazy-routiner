@@ -33,26 +33,17 @@ export default function RoutinePlanForm({
 }: OmittedRoutinePlanFormProps) {
   const router = useRouter();
 
+  const initialDays: { [key: number]: boolean } = {};
+  routine?.repeatDays.forEach((day) => (initialDays[day] = true));
+
+  const [category, categoryDispatcher] = useInputReducer(initialCategoryId);
+  const [days, daysDispatcher] = useInputReducer(initialDays);
+  const [name, nameDispatcher] = useInputReducer(routine?.name || '');
+
   const { data: categories = [], isPending } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
   });
-
-  const initialDays: { [key: number]: boolean } = {};
-  const initialName = routine?.name || '';
-  routine?.repeatDays.forEach((day) => (initialDays[day] = true));
-
-  const [category, categoryDispatcher] = useInputReducer<
-    string,
-    HTMLLegendElement
-  >(initialCategoryId);
-  const [days, daysDispatcher] = useInputReducer<
-    { [key: number]: boolean },
-    HTMLLegendElement
-  >(initialDays);
-  const [name, nameDispatcher] = useInputReducer<string, HTMLLabelElement>(
-    initialName,
-  );
 
   const queryClient = useQueryClient();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

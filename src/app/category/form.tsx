@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import Badge, { BADGE_STYLES, BadgeVariant } from 'src/components/badge';
+import Badge from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useDebounce } from 'src/hooks/useDebounce';
@@ -10,7 +10,16 @@ import { useInputReducer } from 'src/hooks/useInputReducer';
 import { Category, CategoryTheme } from 'types/category';
 
 const PLACEHOLDER = '건강';
-const BADGE_VARIANTS = Object.keys(BADGE_STYLES) as BadgeVariant[];
+const CATEGORY_THEMES: CategoryTheme[] = [
+  'GRAY',
+  'RED',
+  'YELLOW',
+  'GREEN',
+  'BLUE',
+  'INDIGO',
+  'PURPLE',
+  'PINK',
+];
 
 interface RoutineCategoryFormProps
   extends React.FormHTMLAttributes<HTMLFormElement> {
@@ -27,23 +36,17 @@ export default function RoutineCategoryForm({
 }: OmittedRoutineCategoryFormProps) {
   const router = useRouter();
 
-  const [name, nameDispatcher] = useInputReducer<string, HTMLLabelElement>(
-    category?.name || '',
+  const [name, nameDispatcher] = useInputReducer(category?.name || '');
+  const [theme, themeDispatcher] = useInputReducer(
+    category?.theme || CATEGORY_THEMES[0],
   );
-  const [theme, themeDispatcher] = useInputReducer<
-    CategoryTheme,
-    HTMLLegendElement
-  >(category?.theme || BADGE_VARIANTS[0]);
-  const [badgeText, setBadgeTextDebounced] = useDebounce(
-    category?.name || PLACEHOLDER,
-    300,
-  );
+  const [badgeText, setBadgeTextDebounced] = useDebounce(category?.name, 300);
 
   const queryClient = useQueryClient();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const invalid = [
       nameDispatcher.validate((v) => v !== ''),
-      themeDispatcher.validate((v) => BADGE_VARIANTS.includes(v)),
+      themeDispatcher.validate((v) => CATEGORY_THEMES.includes(v)),
     ].some((b) => !b);
 
     if (invalid) {
@@ -69,7 +72,7 @@ export default function RoutineCategoryForm({
           className="mt-4"
           onChange={(e) => {
             nameDispatcher.change(e.target.value);
-            setBadgeTextDebounced(e.target.value || PLACEHOLDER);
+            setBadgeTextDebounced(e.target.value);
           }}
         />
         <Toast
@@ -86,20 +89,20 @@ export default function RoutineCategoryForm({
       <fieldset>
         <Form.Legend ref={themeDispatcher.setRef}>루틴 카테고리</Form.Legend>
         <div className="mt-4 space-y-4">
-          {BADGE_VARIANTS.map((badge) => (
-            <div key={badge} className="flex items-center gap-x-3">
+          {CATEGORY_THEMES.map((ct) => (
+            <div key={ct} className="flex items-center gap-x-3">
               <Form.InputRadio
-                id={badge}
+                id={ct}
                 name="routiner-routine-category"
-                value={badge}
-                checked={theme.value === badge}
+                value={ct}
+                checked={theme.value === ct}
                 onChange={(e) => {
                   const newTheme = e.target.value as CategoryTheme;
                   themeDispatcher.change(newTheme);
                 }}
               />
-              <Form.Label htmlFor={badge}>
-                <Badge variant={badge}>{badgeText}</Badge>
+              <Form.Label htmlFor={ct}>
+                <Badge variant={ct}>{badgeText || PLACEHOLDER}</Badge>
               </Form.Label>
             </div>
           ))}

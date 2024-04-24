@@ -33,7 +33,7 @@ const reducer = <T>(
   }
 };
 
-export function useInputReducer<T, E = HTMLElement>(
+export function useInputReducer<T, E extends HTMLElement>(
   initialValue: T,
 ): [
   { ref: E | null } & State<T>,
