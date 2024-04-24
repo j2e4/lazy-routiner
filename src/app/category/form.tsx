@@ -2,66 +2,63 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
-import Badge, { BADGE_STYLES, BadgeVariant } from 'src/components/badge';
+import Badge from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
-import { useInputReducer } from 'src/hooks/useInputReducer';
+import { useDebounce } from 'src/hooks/useDebounce';
+import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
 import { Category, CategoryTheme } from 'types/category';
 
 const PLACEHOLDER = '건강';
-const BADGE_VARIANTS = Object.keys(BADGE_STYLES) as BadgeVariant[];
+const CATEGORY_THEMES: CategoryTheme[] = [
+  'GRAY',
+  'RED',
+  'YELLOW',
+  'GREEN',
+  'BLUE',
+  'INDIGO',
+  'PURPLE',
+  'PINK',
+];
 
-type RoutineCategoryFormProps = {
+interface RoutineCategoryFormProps
+  extends React.FormHTMLAttributes<HTMLFormElement> {
   category?: Category;
-} & React.FormHTMLAttributes<HTMLFormElement>;
+}
+type OmittedRoutineCategoryFormProps = Omit<
+  RoutineCategoryFormProps,
+  'onSubmit'
+>;
+
 export default function RoutineCategoryForm({
   category,
-  onSubmit,
   ...props
-}: RoutineCategoryFormProps) {
+}: OmittedRoutineCategoryFormProps) {
   const router = useRouter();
 
-  const [name, nameDispatcher] = useInputReducer<string, HTMLLabelElement>(
-    category?.name || '',
+  const [name, nameDispatcher] = useInputReducer(category?.name || '', {
+    type: VALIDATION_TYPE.NOT_EMPTY_STRING,
+  });
+  const [theme, themeDispatcher] = useInputReducer(
+    category?.theme || CATEGORY_THEMES[0],
+    {
+      func: (v) => CATEGORY_THEMES.includes(v),
+    },
   );
-  const [theme, themeDispatcher] = useInputReducer<
-    CategoryTheme,
-    HTMLLegendElement
-  >(category?.theme || BADGE_VARIANTS[0]);
-
-  const [preview, setPreview] = useState(category?.name || PLACEHOLDER);
-  const previewTimeoutId = useRef<NodeJS.Timeout>();
-
-  const handleChangeName = (value: string) => {
-    nameDispatcher.change(value);
-
-    if (previewTimeoutId.current !== undefined)
-      clearTimeout(previewTimeoutId.current);
-    previewTimeoutId.current = setTimeout(() => {
-      setPreview(value || PLACEHOLDER);
-      previewTimeoutId.current = undefined;
-    }, 300);
-  };
-
-  const validate = () => {
-    return [
-      nameDispatcher.validate((v) => v !== ''),
-      themeDispatcher.validate((v) => BADGE_VARIANTS.includes(v)),
-    ].every((valid) => valid);
-  };
+  const [badgeText, setBadgeTextDebounced] = useDebounce(category?.name, 300);
 
   const queryClient = useQueryClient();
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!validate()) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const invalid = [
+      nameDispatcher.validate(),
+      themeDispatcher.validate(),
+    ].some((b) => !b);
+
+    if (invalid) {
       e.preventDefault();
       return;
     }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['categories'],
-    });
-    if (onSubmit !== undefined) onSubmit(e);
+    return queryClient.invalidateQueries({ queryKey: ['categories'] });
   };
 
   return (
@@ -79,7 +76,8 @@ export default function RoutineCategoryForm({
           value={name.value}
           className="mt-4"
           onChange={(e) => {
-            handleChangeName(e.target.value);
+            nameDispatcher.change(e.target.value);
+            setBadgeTextDebounced(e.target.value);
           }}
         />
         <Toast
@@ -96,20 +94,20 @@ export default function RoutineCategoryForm({
       <fieldset>
         <Form.Legend ref={themeDispatcher.setRef}>루틴 카테고리</Form.Legend>
         <div className="mt-4 space-y-4">
-          {BADGE_VARIANTS.map((badge) => (
-            <div key={badge} className="flex items-center gap-x-3">
+          {CATEGORY_THEMES.map((ct) => (
+            <div key={ct} className="flex items-center gap-x-3">
               <Form.InputRadio
-                id={badge}
+                id={ct}
                 name="routiner-routine-category"
-                value={badge}
-                checked={theme.value === badge}
+                value={ct}
+                checked={theme.value === ct}
                 onChange={(e) => {
                   const newTheme = e.target.value as CategoryTheme;
                   themeDispatcher.change(newTheme);
                 }}
               />
-              <Form.Label htmlFor={badge}>
-                <Badge variant={badge}>{preview}</Badge>
+              <Form.Label htmlFor={ct}>
+                <Badge variant={ct}>{badgeText || PLACEHOLDER}</Badge>
               </Form.Label>
             </div>
           ))}

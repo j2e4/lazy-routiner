@@ -35,7 +35,11 @@ export default function RoutineToday() {
     queryFn: () => getList(reqDateStr),
   });
   const routines = data.filter((routine) => Number(routine.routineCheck) === 0);
-  const isEmpty = isSuccess && routines.length === 0;
+
+  let displayMessage = '';
+  if (isPending) displayMessage = '오늘 실천할 루틴을 불러오는 중이에요.';
+  else if (isSuccess && routines.length === 0)
+    displayMessage = '오늘 루틴을 모두 완료했어요.';
 
   const update = async (routineId: string, routineCheck: number) => {
     const response = await postFetch('/history', {
@@ -48,21 +52,10 @@ export default function RoutineToday() {
   return (
     <main>
       <List border="b">
-        {isPending && (
+        {displayMessage !== '' && (
           <List.Item>
             <List.ItemBody className="text-center">
-              <List.ItemBodyText>
-                오늘 실천할 루틴을 불러오는 중이에요.
-              </List.ItemBodyText>
-            </List.ItemBody>
-          </List.Item>
-        )}
-        {isEmpty && (
-          <List.Item>
-            <List.ItemBody className="text-center">
-              <List.ItemBodyText>
-                오늘 루틴을 모두 완료했어요.
-              </List.ItemBodyText>
+              <List.ItemBodyText>{displayMessage}</List.ItemBodyText>
             </List.ItemBody>
           </List.Item>
         )}

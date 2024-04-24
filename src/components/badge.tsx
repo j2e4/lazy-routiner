@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import type { HTMLAttributes } from 'react';
 
-export const BADGE_STYLES = {
+const BADGE_STYLES = {
   GRAY: 'bg-gray-50 text-gray-600 ring-gray-500/10',
   RED: 'bg-red-50 text-red-700 ring-red-600/10',
   YELLOW: 'bg-yellow-50 text-yellow-800 ring-yellow-600/20',
@@ -12,10 +12,8 @@ export const BADGE_STYLES = {
   PINK: 'bg-pink-50 text-pink-700 ring-pink-700/10',
 };
 
-export type BadgeVariant = keyof typeof BADGE_STYLES;
-
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: BadgeVariant;
+  variant?: keyof typeof BADGE_STYLES;
 }
 
 export default function Badge({ variant = 'GRAY', children }: BadgeProps) {

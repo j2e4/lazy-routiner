@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
-import { useInputReducer } from 'src/hooks/useInputReducer';
+import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
 import { getCategories } from 'src/services/server-state/category';
 import { Routine } from 'types/routine';
 
@@ -19,64 +19,51 @@ const RepeatDays = [
   { key: 'sat', label: '토', value: 6 },
 ];
 
-type RoutinePlanFormProps = {
+interface RoutinePlanFormProps
+  extends React.FormHTMLAttributes<HTMLFormElement> {
   initialCategoryId: string;
   routine?: Routine;
-} & React.FormHTMLAttributes<HTMLFormElement>;
+}
+type OmittedRoutinePlanFormProps = Omit<RoutinePlanFormProps, 'onSubmit'>;
+
 export default function RoutinePlanForm({
   initialCategoryId,
   routine,
-  onSubmit,
   ...props
-}: RoutinePlanFormProps) {
+}: OmittedRoutinePlanFormProps) {
   const router = useRouter();
+
+  const initialDays: { [key: number]: boolean } = {};
+  routine?.repeatDays.forEach((day) => (initialDays[day] = true));
+
+  const [category, categoryDispatcher] = useInputReducer(initialCategoryId, {
+    type: VALIDATION_TYPE.NOT_EMPTY_STRING,
+  });
+  const [days, daysDispatcher] = useInputReducer(initialDays, {
+    func: (v) => Object.values(v).some((b) => b),
+  });
+  const [name, nameDispatcher] = useInputReducer(routine?.name || '', {
+    type: VALIDATION_TYPE.NOT_EMPTY_STRING,
+  });
 
   const { data: categories = [], isPending } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
   });
 
-  const initialDays: { [key: number]: boolean } = {};
-  const initialName = routine?.name || '';
-  routine?.repeatDays.forEach((day) => (initialDays[day] = true));
-
-  const [category, categoryDispatcher] = useInputReducer<
-    string,
-    HTMLLegendElement
-  >(initialCategoryId);
-  const [days, daysDispatcher] = useInputReducer<
-    { [key: number]: boolean },
-    HTMLLegendElement
-  >(initialDays);
-  const [name, nameDispatcher] = useInputReducer<string, HTMLLabelElement>(
-    initialName,
-  );
-
-  const validate = () => {
-    return [
-      categoryDispatcher.validate((v) => v !== ''),
-      daysDispatcher.validate((v) => {
-        for (const day in v)
-          if (v[day]) {
-            return true;
-          }
-        return false;
-      }),
-      nameDispatcher.validate((v) => v !== ''),
-    ].every((valid) => valid);
-  };
-
   const queryClient = useQueryClient();
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!validate()) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const invalid = [
+      categoryDispatcher.validate(),
+      daysDispatcher.validate(),
+      nameDispatcher.validate(),
+    ].some((b) => !b);
+
+    if (invalid) {
       e.preventDefault();
       return;
     }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['routines'],
-    });
-    if (onSubmit !== undefined) onSubmit(e);
+    return queryClient.invalidateQueries({ queryKey: ['routines'] });
   };
 
   return (

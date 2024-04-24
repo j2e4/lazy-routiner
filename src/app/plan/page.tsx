@@ -31,24 +31,17 @@ export default function PlanRoutineRootPage() {
   });
   const isEmpty = isSuccess && routines.length === 0;
 
+  let displayMessage = '';
+  if (isPending) displayMessage = '루틴을 불러오는 중이에요.';
+  else if (isEmpty) displayMessage = '등록한 루틴이 없어요.';
+
   return (
     <main>
       <List border="b">
-        {isPending && (
+        {displayMessage !== '' && (
           <List.Item>
-            <List.ItemBody>
-              <List.ItemBodyText className="flex h-full items-center justify-center">
-                루틴을 불러오는 중이에요.
-              </List.ItemBodyText>
-            </List.ItemBody>
-          </List.Item>
-        )}
-        {isEmpty && (
-          <List.Item>
-            <List.ItemBody>
-              <List.ItemBodyText className="flex h-full items-center justify-center">
-                등록한 루틴이 없어요.
-              </List.ItemBodyText>
+            <List.ItemBody className="text-center">
+              <List.ItemBodyText>{displayMessage}</List.ItemBodyText>
             </List.ItemBody>
           </List.Item>
         )}

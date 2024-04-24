@@ -2,18 +2,18 @@ import { Dialog, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 
-type SlidePanelProps = React.PropsWithChildren<{
+type SlideBarProps = React.PropsWithChildren<{
   show: boolean;
   direction?: 'horizontal' | 'vertical'; // TODO
   className?: string;
   onClose: (open?: boolean) => void;
 }>;
-export default function SlidePanel({
+export default function SlideBar({
   show,
   children,
   className,
   onClose,
-}: SlidePanelProps) {
+}: SlideBarProps) {
   return (
     <Transition.Root show={show} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -41,7 +41,7 @@ export default function SlidePanel({
             <Dialog.Panel className="pointer-events-auto relative w-screen max-w-full md:max-w-sm">
               <div
                 className={clsx(
-                  'flex h-full flex-col overflow-y-scroll px-5 py-3 shadow-xl',
+                  'flex h-full flex-col overflow-y-auto px-5 py-3 shadow-xl',
                   className,
                 )}
               >
