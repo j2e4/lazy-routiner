@@ -5,7 +5,7 @@ import { useHoverable } from 'src/hooks/useHoverable';
 import { CallableChildren } from 'types/props';
 
 type ListRootProps = React.PropsWithChildren<{
-  border: 't' | 'b' | 'y';
+  border?: 't' | 'b' | 'y';
   className?: string;
 }>;
 function ListRoot({ border = 'y', children, className }: ListRootProps) {
