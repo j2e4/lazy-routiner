@@ -4,30 +4,31 @@ import { Tab } from '@headlessui/react';
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
+import _ from 'lodash';
 import { useState } from 'react';
 import Badge from 'src/components/badge';
 import Dropdown from 'src/components/dropdown';
 import List from 'src/components/list';
-import {
-  ROUTINE_CHECK_ITEMS,
-  ROUTINE_CHECK_TABS,
-  RoutineCheck,
-} from 'src/constants/routine';
+import { ROUTINE_CHECK_ITEMS, ROUTINE_CHECK_TABS } from 'src/constants/routine';
 import { getFetch, postFetch } from 'src/services/fetch';
 import { toDateStr } from 'src/utils/date-str';
 import { DailyRoutine } from 'types/routine';
 
+const initialTabs = ROUTINE_CHECK_TABS.map((tab) => ({
+  routines: [] as DailyRoutine[],
+  ...tab,
+}));
 export default function RoutineToday() {
   const {
-    data = [],
+    data: tabs = initialTabs,
     isPending,
     isSuccess,
     refetch,
   } = useQuery({
     queryKey: ['daily_routines'],
-    queryFn: () => {
+    queryFn: async () => {
       const date = toDateStr(new Date());
-      return getFetch('/daily', {
+      const arr: DailyRoutine[] = await getFetch('/daily', {
         params: {
           date,
         },
@@ -35,23 +36,24 @@ export default function RoutineToday() {
           tags: ['daily_routines'],
         },
       });
+      const groups = _.groupBy(
+        arr,
+        ({ routineCheck }) => routineCheck ?? ROUTINE_CHECK_TABS[0].key,
+      );
+
+      return ROUTINE_CHECK_TABS.map((tab) => ({
+        routines: groups[tab.key] ?? [],
+        ...tab,
+      }));
     },
   });
-
-  const [tabIndex, setTabIndex] = useState(RoutineCheck.ToCheck);
-  const tab = ROUTINE_CHECK_TABS[tabIndex];
-  const tabData = new Map<RoutineCheck, DailyRoutine[]>();
-  data.forEach((item: DailyRoutine) => {
-    const check = Number(item.routineCheck);
-    const arr = tabData.get(check) || [];
-    tabData.set(check, arr.concat(item));
-  });
-  const routines = tabData.get(tab.key) || [];
+  const [tabIndex, setTabIndex] = useState(ROUTINE_CHECK_TABS[0].key);
+  const currentTab = tabs[tabIndex];
 
   let displayMessage = '';
-  if (isPending) displayMessage = '오늘 실천할 루틴을 불러오는 중이에요.';
-  else if (isSuccess && routines.length === 0)
-    displayMessage = '오늘 루틴을 모두 완료했어요.';
+  if (isPending) displayMessage = currentTab.pendingMessage;
+  else if (isSuccess && currentTab.routines.length === 0)
+    displayMessage = currentTab.emptyListMessage;
 
   const update = async (routineId: string, routineCheck: number) => {
     const response = await postFetch('/history', {
@@ -65,7 +67,7 @@ export default function RoutineToday() {
     <main>
       <Tab.Group selectedIndex={tabIndex} onChange={setTabIndex}>
         <Tab.List className="-mb-px flex justify-between px-6 md:justify-normal md:space-x-6 md:px-8">
-          {ROUTINE_CHECK_TABS.map((tab) => (
+          {tabs.map((tab) => (
             <Tab
               key={tab.key}
               className={({ selected }) =>
@@ -87,72 +89,78 @@ export default function RoutineToday() {
                       !selected && 'bg-gray-100 text-gray-900',
                     )}
                   >
-                    {tabData.get(tab.key)?.length || 0}
+                    {tab.routines.length}
                   </span>
                 </>
               )}
             </Tab>
           ))}
         </Tab.List>
+        <Tab.Panels>
+          {tabs.map(({ routines, ...tab }) => (
+            <Tab.Panel key={tab.key}>
+              <List>
+                {displayMessage !== '' && (
+                  <List.Item>
+                    <List.ItemBody className="text-center">
+                      <List.ItemBodyText>{displayMessage}</List.ItemBodyText>
+                    </List.ItemBody>
+                  </List.Item>
+                )}
+                {routines.map(({ category, ...routine }) => (
+                  <List.Item key={routine.id}>
+                    <List.ItemBody>
+                      <Badge variant={category.theme}>{category.name}</Badge>
+                      <List.ItemBodyText className="mt-1 block">
+                        {routine.name}
+                      </List.ItemBodyText>
+                    </List.ItemBody>
+                    <List.ItemTail className="flex items-center space-x-1">
+                      {tab.updatable && (
+                        <Dropdown>
+                          <Dropdown.Button variant="secondary" size="sm">
+                            <CheckIcon
+                              className="h-3.5 w-3.5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            <span className="sr-only">
+                              Update whether this routine is done or not
+                            </span>
+                          </Dropdown.Button>
+                          <Dropdown.Menu>
+                            {ROUTINE_CHECK_ITEMS.map(({ name, value }) => (
+                              <Dropdown.ButtonItem
+                                key={name}
+                                onClick={() => update(routine.id, value)}
+                              >
+                                {name}
+                              </Dropdown.ButtonItem>
+                            ))}
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
+                      <Dropdown>
+                        <Dropdown.Button variant="secondary" size="sm">
+                          <EllipsisVerticalIcon
+                            className="h-3.5 w-3.5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                          <span className="sr-only">Manage this routine</span>
+                        </Dropdown.Button>
+                        <Dropdown.Menu>
+                          <Dropdown.LinkItem href={`/plan/${routine.id}`}>
+                            수정하기
+                          </Dropdown.LinkItem>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </List.ItemTail>
+                  </List.Item>
+                ))}
+              </List>
+            </Tab.Panel>
+          ))}
+        </Tab.Panels>
       </Tab.Group>
-      <List>
-        {displayMessage !== '' && (
-          <List.Item>
-            <List.ItemBody className="text-center">
-              <List.ItemBodyText>{displayMessage}</List.ItemBodyText>
-            </List.ItemBody>
-          </List.Item>
-        )}
-        {routines.map(({ category, ...routine }) => (
-          <List.Item key={routine.id}>
-            <List.ItemBody>
-              <Badge variant={category.theme}>{category.name}</Badge>
-              <List.ItemBodyText className="mt-1 block">
-                {routine.name}
-              </List.ItemBodyText>
-            </List.ItemBody>
-            <List.ItemTail className="flex items-center space-x-1">
-              {tab.updatable && (
-                <Dropdown>
-                  <Dropdown.Button variant="secondary" size="sm">
-                    <CheckIcon
-                      className="h-3.5 w-3.5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                    <span className="sr-only">
-                      Update whether this routine is done or not
-                    </span>
-                  </Dropdown.Button>
-                  <Dropdown.Menu>
-                    {ROUTINE_CHECK_ITEMS.map(({ name, value }) => (
-                      <Dropdown.ButtonItem
-                        key={name}
-                        onClick={() => update(routine.id, value)}
-                      >
-                        {name}
-                      </Dropdown.ButtonItem>
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
-              )}
-              <Dropdown>
-                <Dropdown.Button variant="secondary" size="sm">
-                  <EllipsisVerticalIcon
-                    className="h-3.5 w-3.5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  <span className="sr-only">Manage this routine</span>
-                </Dropdown.Button>
-                <Dropdown.Menu>
-                  <Dropdown.LinkItem href={`/plan/${routine.id}`}>
-                    수정하기
-                  </Dropdown.LinkItem>
-                </Dropdown.Menu>
-              </Dropdown>
-            </List.ItemTail>
-          </List.Item>
-        ))}
-      </List>
     </main>
   );
 }
