@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import List from 'src/components/list';
-import { RoutineCheck } from 'src/constants/routine';
+import { DAILY_ROUTINE_TABS, RoutineCheck } from 'src/constants/routine';
 import { DailyRoutineTab } from 'types/routine';
 
 const PendingMessage = {
@@ -45,17 +45,16 @@ export default function TabListPlaceholder({
   ]);
 
   const status = queryState?.status;
-  const tab = queryData?.[tabIndex];
-
-  // query 문제
-  if (tab === undefined) return createListItem('탭 정보를 찾을 수 없어요.');
-  if (tab.routines === undefined)
-    return createListItem('루틴 목록을 찾을 수 없어요.');
+  const tab = queryData?.[tabIndex] ?? DAILY_ROUTINE_TABS[tabIndex];
 
   // query state 관련
   if (status === 'pending') return createListItem(PendingMessage[tab.id]);
-  if (status === 'success' && tab.routines.length === 0)
-    return createListItem(EmptyListMessage[tab.id]);
+  if (status === 'success' && tab.routines?.length === 0)
+    return createListItem(EmptyListMessage[tab?.id]);
+
+  // query 문제
+  if (tab.routines === undefined)
+    return createListItem('루틴 목록을 찾을 수 없어요.');
 
   return null;
 }
