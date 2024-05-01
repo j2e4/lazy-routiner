@@ -20,4 +20,5 @@ export type DailyRoutineTab = {
   name: string;
   routines?: DailyRoutine[]; // server state
   checkable?: boolean;
+  updatable?: boolean;
 };

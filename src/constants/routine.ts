@@ -18,6 +18,7 @@ export const DAILY_ROUTINE_TABS: DailyRoutineTab[] = [
     id: RoutineCheck.ToCheck,
     name: '미완료',
     checkable: true,
+    updatable: true,
   },
   { id: RoutineCheck.Checked, name: '완료' },
   { id: RoutineCheck.Skipped, name: '건너뜀' },

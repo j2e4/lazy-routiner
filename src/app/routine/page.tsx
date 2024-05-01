@@ -123,20 +123,22 @@ export default function RoutineToday() {
                           </Dropdown.Menu>
                         </Dropdown>
                       )}
-                      <Dropdown>
-                        <Dropdown.Button variant="secondary" size="sm">
-                          <EllipsisVerticalIcon
-                            className="h-3.5 w-3.5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                          <span className="sr-only">Manage this routine</span>
-                        </Dropdown.Button>
-                        <Dropdown.Menu>
-                          <Dropdown.LinkItem href={`/plan/${routine.id}`}>
-                            수정하기
-                          </Dropdown.LinkItem>
-                        </Dropdown.Menu>
-                      </Dropdown>
+                      {tab.updatable && (
+                        <Dropdown>
+                          <Dropdown.Button variant="secondary" size="sm">
+                            <EllipsisVerticalIcon
+                              className="h-3.5 w-3.5 text-gray-400"
+                              aria-hidden="true"
+                            />
+                            <span className="sr-only">Manage this routine</span>
+                          </Dropdown.Button>
+                          <Dropdown.Menu>
+                            <Dropdown.LinkItem href={`/plan/${routine.id}`}>
+                              수정하기
+                            </Dropdown.LinkItem>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      )}
                     </List.ItemTail>
                   </List.Item>
                 ))}
