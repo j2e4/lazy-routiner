@@ -9,22 +9,18 @@ import { useState } from 'react';
 import Badge from 'src/components/badge';
 import Dropdown from 'src/components/dropdown';
 import List from 'src/components/list';
-import { ROUTINE_CHECK_ITEMS, ROUTINE_CHECK_TABS } from 'src/constants/routine';
+import TabListPlaceholder from 'src/components/routine/TabListPlaceholder';
+import { ROUTINE_CHECK_ITEMS, DAILY_ROUTINE_TABS } from 'src/constants/routine';
 import { getFetch, postFetch } from 'src/services/fetch';
 import { toDateStr } from 'src/utils/date-str';
 import { DailyRoutine } from 'types/routine';
 
-const initialTabs = ROUTINE_CHECK_TABS.map((tab) => ({
+const initialTabs = DAILY_ROUTINE_TABS.map((tab) => ({
   routines: [] as DailyRoutine[],
   ...tab,
 }));
 export default function RoutineToday() {
-  const {
-    data: tabs = initialTabs,
-    isPending,
-    isSuccess,
-    refetch,
-  } = useQuery({
+  const { data: tabs = initialTabs, refetch } = useQuery({
     queryKey: ['daily_routines'],
     queryFn: async () => {
       const date = toDateStr(new Date());
@@ -38,22 +34,16 @@ export default function RoutineToday() {
       });
       const groups = _.groupBy(
         arr,
-        ({ routineCheck }) => routineCheck ?? ROUTINE_CHECK_TABS[0].key,
+        ({ routineCheck }) => routineCheck ?? DAILY_ROUTINE_TABS[0].id,
       );
 
-      return ROUTINE_CHECK_TABS.map((tab) => ({
-        routines: groups[tab.key] ?? [],
+      return DAILY_ROUTINE_TABS.map((tab) => ({
+        routines: groups[tab.id] ?? [],
         ...tab,
       }));
     },
   });
-  const [tabIndex, setTabIndex] = useState(ROUTINE_CHECK_TABS[0].key);
-  const currentTab = tabs[tabIndex];
-
-  let displayMessage = '';
-  if (isPending) displayMessage = currentTab.pendingMessage;
-  else if (isSuccess && currentTab.routines.length === 0)
-    displayMessage = currentTab.emptyListMessage;
+  const [tabIndex, setTabIndex] = useState(0);
 
   const update = async (routineId: string, routineCheck: number) => {
     const response = await postFetch('/history', {
@@ -69,7 +59,7 @@ export default function RoutineToday() {
         <Tab.List className="-mb-px flex justify-between px-6 md:justify-normal md:space-x-6 md:px-8">
           {tabs.map((tab) => (
             <Tab
-              key={tab.key}
+              key={tab.id}
               className={({ selected }) =>
                 clsx(
                   'flex whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium outline-none md:px-2',
@@ -98,15 +88,9 @@ export default function RoutineToday() {
         </Tab.List>
         <Tab.Panels>
           {tabs.map(({ routines, ...tab }) => (
-            <Tab.Panel key={tab.key}>
+            <Tab.Panel key={tab.id}>
               <List>
-                {displayMessage !== '' && (
-                  <List.Item>
-                    <List.ItemBody className="text-center">
-                      <List.ItemBodyText>{displayMessage}</List.ItemBodyText>
-                    </List.ItemBody>
-                  </List.Item>
-                )}
+                <TabListPlaceholder tabIndex={tabIndex} />
                 {routines.map(({ category, ...routine }) => (
                   <List.Item key={routine.id}>
                     <List.ItemBody>
@@ -116,7 +100,7 @@ export default function RoutineToday() {
                       </List.ItemBodyText>
                     </List.ItemBody>
                     <List.ItemTail className="flex items-center space-x-1">
-                      {tab.updatable && (
+                      {tab.checkable && (
                         <Dropdown>
                           <Dropdown.Button variant="secondary" size="sm">
                             <CheckIcon

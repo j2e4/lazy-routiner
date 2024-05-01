@@ -14,3 +14,10 @@ export type DailyRoutine = {
   routineCheck: RoutineCheck | null; // null은 0으로 취급한다.
   category: Category;
 };
+
+export type DailyRoutineTab = {
+  id: RoutineCheck;
+  name: string;
+  routines?: DailyRoutine[]; // server state
+  checkable?: boolean;
+};
