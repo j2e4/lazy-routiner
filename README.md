@@ -10,3 +10,12 @@ This web service has been developed to manage repeated routines.
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-white?logo=tailwindcss)](https://tailwindcss.com/)
 [![ESLint](https://img.shields.io/badge/ESLint-4B32C3?logo=eslint)](https://eslint.org/)
 [![Jest](https://img.shields.io/badge/Jest-99424f?logo=jest)](https://jestjs.io/)
+
+## Preview
+
+### 계획하기
+
+계획한 루틴 목록을 확인해요.  
+새 루틴을 추가하거나 기존 루틴을 수정하는 페이지로 이동할 수 있어요.
+
+https://github.com/j2e4/routiner/assets/40452288/b0a25a95-dd18-40b7-b748-6c5c8a901b88
