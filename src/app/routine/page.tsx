@@ -102,7 +102,11 @@ export default function RoutineToday() {
                     <List.ItemTail className="flex items-center space-x-1">
                       {tab.checkable && (
                         <Dropdown>
-                          <Dropdown.Button variant="secondary" size="sm">
+                          <Dropdown.Button
+                            variant="secondary"
+                            size="sm"
+                            squared
+                          >
                             <CheckIcon
                               className="h-3.5 w-3.5 text-gray-400"
                               aria-hidden="true"
@@ -125,7 +129,11 @@ export default function RoutineToday() {
                       )}
                       {tab.updatable && (
                         <Dropdown>
-                          <Dropdown.Button variant="secondary" size="sm">
+                          <Dropdown.Button
+                            variant="secondary"
+                            size="sm"
+                            squared
+                          >
                             <EllipsisVerticalIcon
                               className="h-3.5 w-3.5 text-gray-400"
                               aria-hidden="true"

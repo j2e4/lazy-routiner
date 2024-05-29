@@ -2,6 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .btn {
+    @apply rounded-md;
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-theme-neutral-200 text-white shadow-sm;
+    @apply hover:bg-theme-neutral-200/90;
+    @apply focus-visible:outline-theme-neutral-200;
+    @apply disabled:bg-theme-neutral-200/80 disabled:text-white;
+  }
+  .btn-secondary {
+    @apply bg-white text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300;
+    @apply hover:bg-gray-50;
+    @apply focus-visible:outline-gray-300;
+    @apply disabled:text-hover-disabled disabled:bg-gray-100;
+  }
+  .btn-clear {
+    @apply text-hover-active;
+    @apply disabled:text-hover-disabled;
+  }
+
+  .btn-sm {
+    @apply px-2 py-1.5 text-xs;
+  }
+  .btn-md {
+    @apply px-3 py-2 text-sm;
+  }
+
+  /* 높이를 기준으로 정사각형을 만들자 */
+  .btn-sm.btn-squared {
+    @apply p-1.5;
+  }
+  .btn-md.btn-squared {
+    @apply p-2;
+  }
+}
+
 @layer utilities {
   .text-hover-disabled {
     color: theme('colors.gray.400');
@@ -17,17 +56,11 @@
   }
 }
 
-@layer components {
-  .dropdown-item {
-    padding: theme('padding[1.5]') theme('padding.4');
-  }
-}
-
 :root {
-  --theme-neutral-100: #e1dcd9;
-  --theme-neutral-200: #8f8681;
-  --theme-neutral-300: #a67f78;
-  --theme-neutral-400: #32435f;
+  --theme-neutral-100: theme('colors.theme-neutral.100');
+  --theme-neutral-200: theme('colors.theme-neutral.200');
+  --theme-neutral-300: theme('colors.theme-neutral.300');
+  --theme-neutral-400: theme('colors.theme-neutral.400');
 }
 
 body {
