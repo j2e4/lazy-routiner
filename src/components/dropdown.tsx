@@ -85,7 +85,7 @@ function DropdownButtonItem({
     <DropdownItemRoot disabled={disabled}>
       <Button
         variant="clear"
-        className="dropdown-item w-full text-left"
+        className="w-full px-4 py-1.5 text-left"
         disabled={disabled}
         {...props}
       >
@@ -104,7 +104,7 @@ function DropdownLinkItem({
     <DropdownItemRoot disabled={disabled}>
       <Link
         href={href}
-        className="dropdown-item block"
+        className="block px-4 py-1.5"
         onClick={(e) => {
           if (disabled) e.preventDefault();
         }}
