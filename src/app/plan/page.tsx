@@ -4,10 +4,10 @@ import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Suspense } from 'react';
 import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import List from 'src/components/list';
+import SuspenseQueryBoundary from 'src/components/templates/SuspenseQueryBoundary';
 import { getFetch } from 'src/services/fetch';
 import { Routine } from 'types/routine';
 
@@ -16,11 +16,11 @@ function PlanPage() {
 
   return (
     <main>
-      <List border="b">
-        <Suspense fallback={<PlansFallback />}>
+      <SuspenseQueryBoundary>
+        <List border="b">
           <Plans />
-        </Suspense>
-      </List>
+        </List>
+      </SuspenseQueryBoundary>
       <div className="py-5 text-center">
         <Button
           variant="secondary"
@@ -67,16 +67,6 @@ function Plans() {
       </List.ItemTail>
     </List.Item>
   ));
-}
-
-function PlansFallback() {
-  return (
-    <List.Item>
-      <List.ItemBody className="text-center">
-        <List.ItemBodyText>루틴을 불러오는 중이에요.</List.ItemBodyText>
-      </List.ItemBody>
-    </List.Item>
-  );
 }
 
 export default PlanPage;
