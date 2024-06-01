@@ -9,12 +9,5 @@ export default function Error({
   error: Error;
   reset: () => void;
 }) {
-  return (
-    <GlobalErrorFallback
-      // TODO API 응답 에러
-      code={888}
-      message={error.message}
-      reset={reset}
-    />
-  );
+  return <GlobalErrorFallback message={error.message} reset={reset} />;
 }
