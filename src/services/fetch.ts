@@ -22,7 +22,7 @@ export async function getFetch(
 
   const res = await fetch(API_URL + path, options);
   if (res.ok) return res.json();
-  // TODO error
+  else throw new Error(); // TODO error
 }
 
 export function postFetch<ReqData>(path: string, body: ReqData) {
