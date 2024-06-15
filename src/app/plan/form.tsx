@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
 import Form from 'src/components/form';
@@ -8,6 +8,7 @@ import Toast from 'src/components/toast';
 import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
 import { getCategories } from 'src/services/server-state/category';
 import { Routine } from 'types/routine';
+import SuspenseQueryBoundary from 'src/components/templates/SuspenseQueryBoundary';
 
 const RepeatDays = [
   { key: 'sun', label: '일', value: 7 },
@@ -46,11 +47,6 @@ export default function RoutinePlanForm({
     type: VALIDATION_TYPE.NOT_EMPTY_STRING,
   });
 
-  const { data: categories = [], isPending } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories,
-  });
-
   const queryClient = useQueryClient();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const invalid = [
@@ -81,27 +77,12 @@ export default function RoutinePlanForm({
           하나 이상 선택해야 해요.
         </Toast>
         <div className="mt-4 space-y-4">
-          {isPending && (
-            <div className="animate-pulse">
-              <div className="h-3 rounded-lg bg-slate-200" />
-            </div>
-          )}
-          {categories.map(({ id, name, theme }) => (
-            <div key={id} className="flex items-center gap-x-3">
-              <Form.InputRadio
-                id={id}
-                name="routiner-category-id"
-                value={id}
-                checked={category.value === id}
-                onChange={(e) => {
-                  categoryDispatcher.change(e.target.value);
-                }}
-              />
-              <Form.Label htmlFor={id}>
-                <Badge variant={theme}>{name}</Badge>
-              </Form.Label>
-            </div>
-          ))}
+          <SuspenseQueryBoundary>
+            <Categories
+              categoryId={category.value}
+              onChange={categoryDispatcher.change}
+            />
+          </SuspenseQueryBoundary>
         </div>
       </fieldset>
       <fieldset>
@@ -166,4 +147,34 @@ export default function RoutinePlanForm({
       </div>
     </Form>
   );
+}
+
+function Categories({
+  categoryId,
+  onChange,
+}: {
+  categoryId: string;
+  onChange: (id: string) => void;
+}) {
+  const { data: categories = [] } = useSuspenseQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  });
+
+  return categories.map(({ id, name, theme }) => (
+    <div key={id} className="flex items-center gap-x-3">
+      <Form.InputRadio
+        id={id}
+        name="routiner-category-id"
+        value={id}
+        checked={categoryId === id}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
+      />
+      <Form.Label htmlFor={id}>
+        <Badge variant={theme}>{name}</Badge>
+      </Form.Label>
+    </div>
+  ));
 }
