@@ -11,11 +11,9 @@ const getCategories = () => {
   });
 };
 
-type UseCategoriesOptions = Omit<
-  UseQueryOptions<Category[]>,
-  'queryKey' | 'queryFn'
->;
-export const useCategories = (options?: UseCategoriesOptions) => {
+export const useCategories = (
+  options?: Omit<UseQueryOptions<Category[]>, 'queryKey' | 'queryFn'>,
+) => {
   const queryOptions = merge(
     {
       queryKey: ['categories'],
