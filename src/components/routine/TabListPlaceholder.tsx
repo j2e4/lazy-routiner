@@ -38,10 +38,10 @@ export default function TabListPlaceholder({
 }: TabListPlaceholderProps) {
   const queryClient = useQueryClient();
   const queryState = queryClient.getQueryState<DailyRoutineTab[]>([
-    'daily_routines',
+    'routine_tabs',
   ]);
   const queryData = queryClient.getQueryData<DailyRoutineTab[]>([
-    'daily_routines',
+    'routine_tabs',
   ]);
 
   const status = queryState?.status;

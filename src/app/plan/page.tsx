@@ -1,34 +1,17 @@
 'use client';
 
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import List from 'src/components/list';
-import { getFetch } from 'src/services/fetch';
-import { Routine } from 'types/routine';
+import { useRoutines } from 'src/services/server-state/routine';
 
-function getList(): Promise<Routine[]> {
-  return getFetch('/routine', {
-    next: {
-      tags: ['routines'],
-    },
-  });
-}
-
-export default function PlanRoutineRootPage() {
+function PlanPage() {
   const router = useRouter();
 
-  const {
-    data: routines = [],
-    isPending,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['routines'],
-    queryFn: getList,
-  });
+  const { data: routines = [], isPending, isSuccess } = useRoutines();
   const isEmpty = isSuccess && routines.length === 0;
 
   let displayMessage = '';
@@ -80,3 +63,5 @@ export default function PlanRoutineRootPage() {
     </main>
   );
 }
+
+export default PlanPage;
