@@ -2,56 +2,25 @@
 
 import { Tab } from '@headlessui/react';
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import _ from 'lodash';
 import { useState } from 'react';
 import Badge from 'src/components/badge';
 import Dropdown from 'src/components/dropdown';
 import List from 'src/components/list';
 import TabListPlaceholder from 'src/components/routine/TabListPlaceholder';
 import { ROUTINE_CHECK_ITEMS, DAILY_ROUTINE_TABS } from 'src/constants/routine';
-import { getFetch, postFetch } from 'src/services/fetch';
-import { toDateStr } from 'src/utils/date-str';
+import { useUpdateRoutineCheck } from 'src/services/server-state/routine';
+import { useRoutineTabs } from 'src/services/server-state/routine-tabs';
 import { DailyRoutine } from 'types/routine';
 
 const initialTabs = DAILY_ROUTINE_TABS.map((tab) => ({
   routines: [] as DailyRoutine[],
   ...tab,
 }));
-export default function RoutineToday() {
-  const { data: tabs = initialTabs, refetch } = useQuery({
-    queryKey: ['daily_routines'],
-    queryFn: async () => {
-      const date = toDateStr(new Date());
-      const arr: DailyRoutine[] = await getFetch('/daily', {
-        params: {
-          date,
-        },
-        next: {
-          tags: ['daily_routines'],
-        },
-      });
-      const groups = _.groupBy(
-        arr,
-        ({ routineCheck }) => routineCheck ?? DAILY_ROUTINE_TABS[0].id,
-      );
-
-      return DAILY_ROUTINE_TABS.map((tab) => ({
-        routines: groups[tab.id] ?? [],
-        ...tab,
-      }));
-    },
-  });
+function RoutinePage() {
   const [tabIndex, setTabIndex] = useState(0);
-
-  const update = async (routineId: string, routineCheck: number) => {
-    const response = await postFetch('/history', {
-      routineId,
-      routineCheck,
-    });
-    if (response.ok) await refetch();
-  };
+  const { data: tabs = initialTabs } = useRoutineTabs();
+  const { mutate } = useUpdateRoutineCheck();
 
   return (
     <main>
@@ -79,7 +48,7 @@ export default function RoutineToday() {
                       !selected && 'bg-gray-100 text-gray-900',
                     )}
                   >
-                    {tab.routines.length}
+                    {tab.routines?.length ?? 0}
                   </span>
                 </>
               )}
@@ -91,7 +60,7 @@ export default function RoutineToday() {
             <Tab.Panel key={tab.id}>
               <List>
                 <TabListPlaceholder tabIndex={tabIndex} />
-                {routines.map(({ category, ...routine }) => (
+                {routines?.map(({ category, ...routine }) => (
                   <List.Item key={routine.id}>
                     <List.ItemBody>
                       <Badge variant={category.theme}>{category.name}</Badge>
@@ -119,7 +88,9 @@ export default function RoutineToday() {
                             {ROUTINE_CHECK_ITEMS.map(({ name, value }) => (
                               <Dropdown.ButtonItem
                                 key={name}
-                                onClick={() => update(routine.id, value)}
+                                onClick={() => {
+                                  mutate({ id: routine.id, check: value });
+                                }}
                               >
                                 {name}
                               </Dropdown.ButtonItem>
@@ -158,3 +129,5 @@ export default function RoutineToday() {
     </main>
   );
 }
+
+export default RoutinePage;

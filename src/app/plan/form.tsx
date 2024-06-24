@@ -1,12 +1,12 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Badge from 'src/components/badge';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
-import { getCategories } from 'src/services/server-state/category';
+import { useCategories } from 'src/services/server-state/category';
 import { Routine } from 'types/routine';
 
 const RepeatDays = [
@@ -46,10 +46,7 @@ export default function RoutinePlanForm({
     type: VALIDATION_TYPE.NOT_EMPTY_STRING,
   });
 
-  const { data: categories = [], isPending } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories,
-  });
+  const { data: categories = [], isPending } = useCategories();
 
   const queryClient = useQueryClient();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

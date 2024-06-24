@@ -1,7 +1,6 @@
 'use client';
 
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -9,15 +8,13 @@ import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import Dialog from 'src/components/dialog';
 import List from 'src/components/list';
-import { getCategories } from 'src/services/server-state/category';
+import { useCategories } from 'src/services/server-state/category';
 
-export default function SettingRootPage() {
+function SettingPage() {
   const router = useRouter();
   const [categoryListOpened, setCategoryListOpened] = useState(false);
 
-  const { data: categories = [], isPending } = useQuery({
-    queryKey: ['categories'],
-    queryFn: getCategories,
+  const { data: categories = [], isPending } = useCategories({
     enabled: categoryListOpened,
   });
 
@@ -93,3 +90,5 @@ export default function SettingRootPage() {
     </main>
   );
 }
+
+export default SettingPage;
