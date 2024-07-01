@@ -3,8 +3,8 @@ import 'src/app/globals.css';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Providers from 'src/app/providers';
 import GlobalNav from 'src/components/global-nav';
-import GlobalQueryClientProvider from 'src/services/server-state/query-client-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,10 +31,10 @@ export default function RootLayout({
           <GlobalNav />
         </div>
         <div className="relative mx-auto min-h-screen max-w-2xl space-y-8 bg-white pt-16 shadow-lg shadow-black/10">
-          <GlobalQueryClientProvider>
-            {children}
+          <Providers>
+            <main>{children}</main>
             <ReactQueryDevtools />
-          </GlobalQueryClientProvider>
+          </Providers>
         </div>
       </body>
     </html>
