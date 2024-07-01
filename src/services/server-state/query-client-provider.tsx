@@ -1,23 +1,40 @@
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import {
+  isServer,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        // With SSR, 클라이언트에서 바로 refetch하는 걸 막기 위해 default보다 높게 (default: 0)
+        staleTime: 60 * 1000,
+      },
+    },
+  });
+}
+
+let browserQueryClient: QueryClient | undefined;
+function getQueryClient() {
+  // 서버일 때는 항상 새로 만든다.
+  if (isServer) return makeQueryClient();
+  else if (browserQueryClient === undefined) {
+    // 갖고 있는 게 없다면 새로 만든다.
+    // suspense boundary가 있다면 이 작업은 필요 없을 수 있다.
+    browserQueryClient = makeQueryClient();
+  }
+
+  return browserQueryClient;
+}
 
 export default function GlobalQueryClientProvider({
   children,
 }: React.PropsWithChildren) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            // With SSR, we usually want to set some default staleTime above 0
-            // to avoid refetching immediately on the client
-            staleTime: 60 * 1000,
-          },
-        },
-      }),
-  );
+  // suspense boundary 없으면 React가 초기 렌더에서 throw away the client할 거라 useState 피한다.
+  const queryClient = getQueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
