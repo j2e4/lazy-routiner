@@ -17,9 +17,5 @@ export default function RoutineCategoryCreatePage() {
     } else throw new Error(await response.json());
   }
 
-  return (
-    <main>
-      <RoutineCategoryForm action={create} />
-    </main>
-  );
+  return <RoutineCategoryForm action={create} />;
 }

@@ -17,11 +17,9 @@ export default function RoutinePlanCreatePage() {
   }
 
   return (
-    <main>
-      <RoutinePlanForm
-        action={create}
-        initialCategoryId={process.env.DEFAULT_CATEGORY_ID || ''}
-      />
-    </main>
+    <RoutinePlanForm
+      action={create}
+      initialCategoryId={process.env.DEFAULT_CATEGORY_ID || ''}
+    />
   );
 }
