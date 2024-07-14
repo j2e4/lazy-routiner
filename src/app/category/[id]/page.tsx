@@ -37,9 +37,5 @@ export default async function RoutineCategoryUpdatePage({
     } else throw new Error(await response.json());
   }
 
-  return (
-    <main>
-      <RoutineCategoryForm action={update} category={category} />
-    </main>
-  );
+  return <RoutineCategoryForm action={update} category={category} />;
 }

@@ -19,7 +19,7 @@ function SettingPage() {
   });
 
   return (
-    <main>
+    <>
       <List border="b">
         <List.Item hoverable>
           <List.ItemBody>
@@ -87,7 +87,7 @@ function SettingPage() {
           </Button>
         </Dialog.Footer>
       </Dialog>
-    </main>
+    </>
   );
 }
 

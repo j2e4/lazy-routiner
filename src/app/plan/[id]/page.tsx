@@ -32,12 +32,10 @@ export default async function RoutinePlanUpdatePage({
   }
 
   return (
-    <main>
-      <RoutinePlanForm
-        action={update}
-        initialCategoryId={routine.category.id}
-        routine={routine}
-      />
-    </main>
+    <RoutinePlanForm
+      action={update}
+      initialCategoryId={routine.category.id}
+      routine={routine}
+    />
   );
 }

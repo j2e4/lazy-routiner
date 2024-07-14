@@ -28,7 +28,7 @@ export default function GlobalErrorFallback({
   reset,
 }: GlobalErrorFallbackProps) {
   return (
-    <main className="text-center text-gray-900">
+    <div className="text-center text-gray-900">
       <div className="my-8 space-y-2">
         <h2 className="my-8 text-6xl">{code}</h2>
         <p className="font-serif italic">{message}</p>
@@ -47,6 +47,6 @@ export default function GlobalErrorFallback({
           </Button>
         )}
       </div>
-    </main>
+    </div>
   );
 }
