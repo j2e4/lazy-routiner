@@ -62,7 +62,7 @@ export default function RoutineCategoryForm({
   };
 
   return (
-    <Form onCancel={router.back} onSubmit={handleSubmit} {...props}>
+    <Form onSubmit={handleSubmit} {...props}>
       <div>
         <Form.Label
           htmlFor="routiner-category-name"

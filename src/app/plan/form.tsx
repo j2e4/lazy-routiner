@@ -64,7 +64,7 @@ export default function RoutinePlanForm({
   };
 
   return (
-    <Form onCancel={router.back} onSubmit={handleSubmit} {...props}>
+    <Form onSubmit={handleSubmit} {...props}>
       <fieldset>
         <Form.Legend ref={categoryDispatcher.setRef}>루틴 카테고리</Form.Legend>
         <Toast
