@@ -3,7 +3,7 @@ import { merge } from 'lodash';
 import { getFetch } from 'src/services/fetch';
 import { Category } from 'types/category';
 
-const getCategories = () => {
+export const getCategories = () => {
   return getFetch('/category', {
     next: {
       tags: ['categories'],

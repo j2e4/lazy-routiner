@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getFetch, postFetch } from 'src/services/fetch';
-import { Routine } from 'types/routine';
+import { Category } from 'types/category';
+
+export type Routine = {
+  id: string; // uuid
+  name: string;
+  repeatDays: number[];
+  category: Category;
+};
 
 export const getRoutines = () => {
   return getFetch('/routine', {
