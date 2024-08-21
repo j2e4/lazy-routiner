@@ -71,6 +71,25 @@ function PlanForm({ action, routine }: PlanFormProps) {
           루틴 카테고리
         </Form.Legend>
         <div className="mt-4 space-y-4">
+          {categories.length === 0 && (
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="text-center text-sm tracking-tight text-gray-800">
+                <p>등록한 카테고리가 없어요.</p>
+                <p>먼저 카테고리를 등록해주세요.</p>
+              </div>
+              <div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    router.push('/category/new');
+                  }}
+                >
+                  카테고리 등록하러 가기
+                </Button>
+              </div>
+            </div>
+          )}
           {categories.map(({ id, name, theme }) => (
             <div key={id} className="flex items-center gap-x-3">
               <Form.InputRadio
