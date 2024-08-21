@@ -21,14 +21,20 @@ interface PlanFormProps {
   routine?: Routine;
 }
 
-function PlanForm({ action }: PlanFormProps) {
+function PlanForm({ action, routine }: PlanFormProps) {
   const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<PlanFieldValues>();
+  } = useForm<PlanFieldValues>({
+    defaultValues: {
+      categoryId: routine?.category.id,
+      repeatDays: routine?.repeatDays.map(String),
+      routineName: routine?.name,
+    },
+  });
   const onSubmit: SubmitHandler<PlanFieldValues> = async (plan) => {
     await action(plan);
   };

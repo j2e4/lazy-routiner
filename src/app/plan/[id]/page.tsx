@@ -6,9 +6,9 @@ import {
 import { revalidateTag } from 'next/cache';
 import { permanentRedirect } from 'next/navigation';
 import PlanForm from 'src/app/plan/form';
-import { getFetch, putFetch } from 'src/services/fetch';
+import { putFetch } from 'src/services/fetch';
 import { getCategories } from 'src/services/server-state/category';
-import { Routine } from 'src/services/server-state/routine';
+import { getRoutine, Routine } from 'src/services/server-state/routine';
 
 export default async function PlanIdPage({
   params: { id },
@@ -20,11 +20,7 @@ export default async function PlanIdPage({
     queryKey: ['categories'],
     queryFn: getCategories,
   });
-  const routine: Routine = await getFetch(`/routine/${id}`, {
-    next: {
-      tags: ['routine', id],
-    },
-  });
+  const routine: Routine = await getRoutine(id);
   async function update(formData: FormData) {
     'use server';
 

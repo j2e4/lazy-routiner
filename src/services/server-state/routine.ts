@@ -17,6 +17,14 @@ export const getRoutines = () => {
   });
 };
 
+export const getRoutine = (id: string) => {
+  return getFetch(`/routine/${id}`, {
+    next: {
+      tags: ['routine', id],
+    },
+  });
+};
+
 type UpdateRoutineCheckParams = {
   id: string;
   check: number;
