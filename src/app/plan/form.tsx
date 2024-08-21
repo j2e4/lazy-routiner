@@ -11,13 +11,13 @@ import Toast from 'src/components/toast';
 import { useCategories } from 'src/services/server-state/category';
 import { Routine } from 'src/services/server-state/routine';
 
-export type PlanValues = {
+export type PlanFieldValues = {
   categoryId: string;
   repeatDays: string[];
   routineName: string;
 };
 interface PlanFormProps {
-  action: SubmitHandler<PlanValues>;
+  action: SubmitHandler<PlanFieldValues>;
   routine?: Routine;
 }
 
@@ -28,9 +28,9 @@ function PlanForm({ action }: PlanFormProps) {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<PlanValues>();
-  const onSubmit: SubmitHandler<PlanValues> = (plan) => {
-    action(plan);
+  } = useForm<PlanFieldValues>();
+  const onSubmit: SubmitHandler<PlanFieldValues> = async (plan) => {
+    await action(plan);
   };
 
   type RefsMapKey = 'category' | 'days' | 'name';
@@ -54,6 +54,7 @@ function PlanForm({ action }: PlanFormProps) {
   }
 
   const categoriesQuery = useCategories();
+  const categories = categoriesQuery.data ?? [];
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -62,7 +63,7 @@ function PlanForm({ action }: PlanFormProps) {
           루틴 카테고리
         </Form.Legend>
         <div className="mt-4 space-y-4">
-          {categoriesQuery.data?.map(({ id, name, theme }) => (
+          {categories.map(({ id, name, theme }) => (
             <div key={id} className="flex items-center gap-x-3">
               <Form.InputRadio
                 id={id}
@@ -162,7 +163,6 @@ function PlanForm({ action }: PlanFormProps) {
           variant="primary"
           size="md"
           onClick={() => {
-            const categories = categoriesQuery.data ?? [];
             if (categories.length === 0)
               setError('categoryId', { type: 'required' });
           }}
