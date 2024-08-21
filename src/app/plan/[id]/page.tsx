@@ -1,14 +1,25 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
 import { revalidateTag } from 'next/cache';
 import { permanentRedirect } from 'next/navigation';
-import RoutinePlanForm from 'src/app/plan/form';
+import PlanForm from 'src/app/plan/form';
 import { getFetch, putFetch } from 'src/services/fetch';
-import { Routine } from 'types/routine';
+import { getCategories } from 'src/services/server-state/category';
+import { Routine } from 'src/services/server-state/routine';
 
-export default async function RoutinePlanUpdatePage({
+export default async function PlanIdPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
+  const queryClient = new QueryClient();
+  await queryClient.fetchQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  });
   const routine: Routine = await getFetch(`/routine/${id}`, {
     next: {
       tags: ['routine', id],
@@ -32,10 +43,8 @@ export default async function RoutinePlanUpdatePage({
   }
 
   return (
-    <RoutinePlanForm
-      action={update}
-      initialCategoryId={routine.category.id}
-      routine={routine}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PlanForm action={update} routine={routine} />
+    </HydrationBoundary>
   );
 }

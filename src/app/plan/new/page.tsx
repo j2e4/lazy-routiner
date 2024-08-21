@@ -1,8 +1,20 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
 import { permanentRedirect } from 'next/navigation';
-import RoutinePlanForm from 'src/app/plan/form';
+import PlanForm from 'src/app/plan/form';
 import { postFetch } from 'src/services/fetch';
+import { getCategories } from 'src/services/server-state/category';
 
-export default function RoutinePlanCreatePage() {
+export default async function PlanNewPage() {
+  const queryClient = new QueryClient();
+  await queryClient.fetchQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  });
+
   async function create(formData: FormData) {
     'use server';
 
@@ -17,9 +29,8 @@ export default function RoutinePlanCreatePage() {
   }
 
   return (
-    <RoutinePlanForm
-      action={create}
-      initialCategoryId={process.env.DEFAULT_CATEGORY_ID || ''}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PlanForm action={create} />
+    </HydrationBoundary>
   );
 }
