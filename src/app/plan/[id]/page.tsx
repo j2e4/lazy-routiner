@@ -5,10 +5,13 @@ import {
 } from '@tanstack/react-query';
 import { revalidateTag } from 'next/cache';
 import { permanentRedirect } from 'next/navigation';
-import PlanForm from 'src/app/plan/form';
-import { putFetch } from 'src/services/fetch';
+import PlanForm, { PlanFieldValues } from 'src/app/plan/form';
 import { getCategories } from 'src/services/server-state/category';
-import { getRoutine, Routine } from 'src/services/server-state/routine';
+import {
+  getRoutine,
+  Routine,
+  updateRoutine,
+} from 'src/services/server-state/routine';
 
 export default async function PlanIdPage({
   params: { id },
@@ -21,21 +24,18 @@ export default async function PlanIdPage({
     queryFn: getCategories,
   });
   const routine: Routine = await getRoutine(id);
-  async function update(formData: FormData) {
+
+  async function update(formData: PlanFieldValues) {
     'use server';
 
-    const response = await putFetch(`/routine/${id}`, {
-      id,
-      name: formData.get('routiner-routine-name'),
-      repeatDays: formData.getAll('routiner-repeat-days').map(Number),
-      categoryId: formData.get('routiner-category-id'),
+    await updateRoutine(id, {
+      name: formData.routineName,
+      repeatDays: formData.repeatDays.map(Number),
+      categoryId: formData.categoryId,
     });
-
-    if (response.ok) {
-      revalidateTag(id);
-      revalidateTag('routines');
-      permanentRedirect('/plan');
-    } else throw new Error(await response.json());
+    revalidateTag(id);
+    revalidateTag('routines');
+    permanentRedirect('/plan');
   }
 
   return (

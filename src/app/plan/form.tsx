@@ -37,6 +37,8 @@ function PlanForm({ action, routine }: PlanFormProps) {
   });
   const onSubmit: SubmitHandler<PlanFieldValues> = async (plan) => {
     await action(plan);
+    // TODO pending 처리
+    // TODO 에러 처리, 지금은 아무 동작하지 않는다.
   };
 
   type RefsMapKey = 'category' | 'days' | 'name';

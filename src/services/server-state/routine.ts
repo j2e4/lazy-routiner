@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getFetch, postFetch } from 'src/services/fetch';
+import { getFetch, postFetch, putFetch } from 'src/services/fetch';
 import { Category } from 'types/category';
 
 export type Routine = {
@@ -23,6 +23,25 @@ export const getRoutine = (id: string) => {
       tags: ['routine', id],
     },
   });
+};
+
+type CreateRoutineParams = {
+  name: string;
+  repeatDays: number[];
+  categoryId: string;
+};
+
+export const createRoutine = async (params: CreateRoutineParams) => {
+  const response = await postFetch('/routine', params);
+  if (!response.ok) throw new Error();
+};
+
+export const updateRoutine = async (
+  id: string,
+  params: CreateRoutineParams,
+) => {
+  const response = await putFetch(`/routine/${id}`, { id, ...params });
+  if (!response.ok) throw new Error();
 };
 
 type UpdateRoutineCheckParams = {
