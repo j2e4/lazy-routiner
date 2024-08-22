@@ -1,6 +1,6 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { merge } from 'lodash';
-import { getFetch } from 'src/services/fetch';
+import { getFetch, postFetch, putFetch } from 'src/services/fetch';
 
 export type CategoryTheme =
   | 'GRAY'
@@ -24,6 +24,32 @@ export const getCategories = () => {
       tags: ['categories'],
     },
   });
+};
+
+export const getCategory = (id: string) => {
+  return getFetch(`/category/${id}`, {
+    next: {
+      tags: ['category', id],
+    },
+  });
+};
+
+type CreateCategoryParams = {
+  name: string;
+  theme: CategoryTheme;
+};
+
+export const createCategory = async (params: CreateCategoryParams) => {
+  const response = await postFetch('/category', params);
+  if (!response.ok) throw new Error();
+};
+
+export const updateCategory = async (
+  id: string,
+  params: CreateCategoryParams,
+) => {
+  const response = await putFetch(`/category/${id}`, { id, ...params });
+  if (!response.ok) throw new Error();
 };
 
 export const useCategories = (

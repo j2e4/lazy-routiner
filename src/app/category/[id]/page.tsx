@@ -1,40 +1,28 @@
 import { revalidateTag } from 'next/cache';
 import { permanentRedirect } from 'next/navigation';
-import RoutineCategoryForm from 'src/app/category/form';
-import { getFetch, putFetch } from 'src/services/fetch';
+import RoutineCategoryForm, {
+  CategoryFieldValues,
+} from 'src/app/category/form';
+import {
+  Category,
+  getCategory,
+  updateCategory,
+} from 'src/services/server-state/category';
 
-export default async function RoutineCategoryUpdatePage({
+export default async function CategoryIdPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const category = await getFetch(`/category/${id}`, {
-    next: {
-      tags: ['category', id],
-    },
-  });
-  async function update(formData: FormData) {
+  const category: Category = await getCategory(id);
+
+  async function update(formData: CategoryFieldValues) {
     'use server';
 
-    const response = await putFetch(
-      `/category/${id}`,
-      {
-        id,
-        name: formData.get('routiner-category-name'),
-        theme: formData.get('routiner-routine-category'),
-      },
-      {
-        next: {
-          tags: ['category', id],
-        },
-      },
-    );
-
-    if (response.ok) {
-      revalidateTag(id);
-      revalidateTag('categories');
-      permanentRedirect('/setting');
-    } else throw new Error(await response.json());
+    await updateCategory(id, formData);
+    revalidateTag(id);
+    revalidateTag('categories');
+    permanentRedirect('/setting');
   }
 
   return <RoutineCategoryForm action={update} category={category} />;

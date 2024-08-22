@@ -30,9 +30,9 @@ function PlanForm({ action, routine }: PlanFormProps) {
     setError,
   } = useForm<PlanFieldValues>({
     defaultValues: {
-      categoryId: routine?.category.id,
-      repeatDays: routine?.repeatDays.map(String),
-      routineName: routine?.name,
+      categoryId: routine?.category.id ?? '',
+      repeatDays: routine?.repeatDays.map(String) ?? [],
+      routineName: routine?.name ?? '',
     },
   });
   const onSubmit: SubmitHandler<PlanFieldValues> = async (plan) => {

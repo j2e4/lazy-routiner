@@ -1,20 +1,17 @@
+import { revalidateTag } from 'next/cache';
 import { permanentRedirect } from 'next/navigation';
-import RoutineCategoryForm from 'src/app/category/form';
-import { postFetch } from 'src/services/fetch';
-import { CategoryTheme } from 'types/category';
+import RoutineCategoryForm, {
+  CategoryFieldValues,
+} from 'src/app/category/form';
+import { createCategory } from 'src/services/server-state/category';
 
-export default function RoutineCategoryCreatePage() {
-  async function create(formData: FormData) {
+export default function CategoryNewPage() {
+  async function create(formData: CategoryFieldValues) {
     'use server';
 
-    const response = await postFetch('/category', {
-      name: formData.get('routiner-category-name') as string,
-      theme: formData.get('routiner-routine-category') as CategoryTheme,
-    });
-
-    if (response.ok) {
-      permanentRedirect('/setting');
-    } else throw new Error(await response.json());
+    await createCategory(formData);
+    revalidateTag('categories');
+    permanentRedirect('/setting');
   }
 
   return <RoutineCategoryForm action={create} />;
