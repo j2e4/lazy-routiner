@@ -2,12 +2,12 @@
 
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import React, { useRef } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Badge from 'src/components/badge';
 import Button from 'src/components/button';
 import Form from 'src/components/form';
 import Toast from 'src/components/toast';
+import { useRefs } from 'src/hooks/useRefs';
 import { useCategories } from 'src/services/server-state/category';
 import { Routine } from 'src/services/server-state/routine';
 
@@ -40,26 +40,7 @@ function PlanForm({ action, routine }: PlanFormProps) {
     // TODO pending 처리
     // TODO 에러 처리, 지금은 아무 동작하지 않는다.
   };
-
-  type RefsMapKey = 'category' | 'days' | 'name';
-  type RefsMap = Map<RefsMapKey, HTMLLegendElement | HTMLLabelElement>;
-  const refs = useRef<RefsMap>();
-  function getMap() {
-    if (!refs.current) refs.current = new Map();
-    return refs.current;
-  }
-  function setMap(
-    key: RefsMapKey,
-    node: HTMLLegendElement | HTMLLabelElement | null,
-  ) {
-    const map = getMap();
-    if (node) map.set(key, node);
-    else map.delete(key);
-  }
-  function getRef(key: RefsMapKey) {
-    const map = getMap();
-    return map.get(key) ?? null;
-  }
+  const { getRef, setRef } = useRefs();
 
   const categoriesQuery = useCategories();
   const categories = categoriesQuery.data ?? [];
@@ -67,7 +48,7 @@ function PlanForm({ action, routine }: PlanFormProps) {
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <fieldset>
-        <Form.Legend ref={(node) => setMap('category', node)}>
+        <Form.Legend ref={(node) => setRef('category', node)}>
           루틴 카테고리
         </Form.Legend>
         <div className="mt-4 space-y-4">
@@ -115,7 +96,7 @@ function PlanForm({ action, routine }: PlanFormProps) {
         </Toast>
       </fieldset>
       <fieldset>
-        <Form.Legend ref={(node) => setMap('days', node)}>
+        <Form.Legend ref={(node) => setRef('days', node)}>
           루틴을 반복할 요일
         </Form.Legend>
         <div className="mt-4 grid grid-cols-4 gap-x-6 gap-y-4 sm:grid-cols-7">
@@ -150,7 +131,7 @@ function PlanForm({ action, routine }: PlanFormProps) {
         </div>
       </fieldset>
       <div>
-        <Form.Label htmlFor="routineName" ref={(node) => setMap('name', node)}>
+        <Form.Label htmlFor="routineName" ref={(node) => setRef('name', node)}>
           실천할 내용
         </Form.Label>
         <Form.InputText
