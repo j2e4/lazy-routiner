@@ -7,7 +7,7 @@ import Form from 'src/components/form';
 import Toast from 'src/components/toast';
 import { useDebounce } from 'src/hooks/useDebounce';
 import { VALIDATION_TYPE, useInputReducer } from 'src/hooks/useInputReducer';
-import { Category, CategoryTheme } from 'types/category';
+import { Category, CategoryTheme } from 'src/services/server-state/category';
 
 const PLACEHOLDER = '건강';
 const CATEGORY_THEMES: CategoryTheme[] = [

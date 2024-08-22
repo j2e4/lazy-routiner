@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getFetch, postFetch, putFetch } from 'src/services/fetch';
-import { Category } from 'types/category';
+import { Category } from 'src/services/server-state/category';
 
 export type Routine = {
   id: string; // uuid

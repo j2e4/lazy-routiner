@@ -1,7 +1,22 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { merge } from 'lodash';
 import { getFetch } from 'src/services/fetch';
-import { Category } from 'types/category';
+
+export type CategoryTheme =
+  | 'GRAY'
+  | 'RED'
+  | 'YELLOW'
+  | 'GREEN'
+  | 'BLUE'
+  | 'INDIGO'
+  | 'PURPLE'
+  | 'PINK';
+
+export type Category = {
+  id: string; // uuid
+  name: string;
+  theme: CategoryTheme;
+};
 
 export const getCategories = () => {
   return getFetch('/category', {

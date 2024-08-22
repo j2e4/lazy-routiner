@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
 import { getFetch } from 'src/services/fetch';
 import { toDateStr } from 'src/utils/date-str';
-import { Category } from 'types/category';
+import { Category } from 'src/services/server-state/category';
 
 export enum CheckOption {
   ToCheck = 0,
