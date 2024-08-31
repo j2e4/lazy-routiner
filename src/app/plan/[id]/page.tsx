@@ -1,41 +1,43 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
 import { revalidateTag } from 'next/cache';
-import { permanentRedirect } from 'next/navigation';
-import RoutinePlanForm from 'src/app/plan/form';
-import { getFetch, putFetch } from 'src/services/fetch';
-import { Routine } from 'types/routine';
+import PlanForm, { PlanFieldValues } from 'src/app/plan/form';
+import { getCategories } from 'src/services/server-state/category';
+import {
+  getRoutine,
+  Routine,
+  updateRoutine,
+} from 'src/services/server-state/routine';
 
-export default async function RoutinePlanUpdatePage({
+export default async function PlanIdPage({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const routine: Routine = await getFetch(`/routine/${id}`, {
-    next: {
-      tags: ['routine', id],
-    },
+  const queryClient = new QueryClient();
+  await queryClient.fetchQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
   });
-  async function update(formData: FormData) {
+  const routine: Routine = await getRoutine(id);
+
+  async function update(formData: PlanFieldValues) {
     'use server';
 
-    const response = await putFetch(`/routine/${id}`, {
-      id,
-      name: formData.get('routiner-routine-name'),
-      repeatDays: formData.getAll('routiner-repeat-days').map(Number),
-      categoryId: formData.get('routiner-category-id'),
+    await updateRoutine(id, {
+      name: formData.routineName,
+      repeatDays: formData.repeatDays.map(Number),
+      categoryId: formData.categoryId,
     });
-
-    if (response.ok) {
-      revalidateTag(id);
-      revalidateTag('routines');
-      permanentRedirect('/plan');
-    } else throw new Error(await response.json());
+    revalidateTag(id);
   }
 
   return (
-    <RoutinePlanForm
-      action={update}
-      initialCategoryId={routine.category.id}
-      routine={routine}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PlanForm action={update} routine={routine} />
+    </HydrationBoundary>
   );
 }

@@ -2,14 +2,7 @@ const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 const API_URL = `${API_BASE_URL}/api`;
 
-interface GetRequestOptions extends RequestInit {
-  params?: Record<string, string | number | boolean>;
-}
-
-export async function getFetch(
-  path: string,
-  { params, ...options }: GetRequestOptions,
-) {
+export async function getFetch(path: string, params?: Record<string, unknown>) {
   if (params !== undefined) {
     const searchParams = new URLSearchParams();
     for (const key in params) {
@@ -20,7 +13,7 @@ export async function getFetch(
     path += searchParams.toString();
   }
 
-  const res = await fetch(API_URL + path, options);
+  const res = await fetch(API_URL + path, { cache: 'no-store' });
   if (res.ok) return res.json();
   // TODO error
 }

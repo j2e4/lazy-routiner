@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
 import { getFetch } from 'src/services/fetch';
 import { toDateStr } from 'src/utils/date-str';
-import { Category } from 'types/category';
+import { Category } from 'src/services/server-state/category';
 
 export enum CheckOption {
   ToCheck = 0,
@@ -54,14 +54,7 @@ export const DAILY_ROUTINE_TABS: DailyRoutineTab[] = [
 
 export const getRoutineTabs = async () => {
   const date = toDateStr(new Date());
-  const arr = await getFetch('/daily', {
-    params: {
-      date,
-    },
-    next: {
-      tags: ['routine_tabs'],
-    },
-  });
+  const arr = await getFetch('/daily', { date });
   const groups = _.groupBy(
     arr,
     ({ routineCheck }) => routineCheck ?? DAILY_ROUTINE_TABS[0].id,
