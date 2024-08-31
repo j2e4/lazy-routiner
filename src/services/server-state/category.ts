@@ -19,19 +19,11 @@ export type Category = {
 };
 
 export const getCategories = () => {
-  return getFetch('/category', {
-    next: {
-      tags: ['categories'],
-    },
-  });
+  return getFetch('/category');
 };
 
 export const getCategory = (id: string) => {
-  return getFetch(`/category/${id}`, {
-    next: {
-      tags: ['category', id],
-    },
-  });
+  return getFetch(`/category/${id}`);
 };
 
 type CreateCategoryParams = {

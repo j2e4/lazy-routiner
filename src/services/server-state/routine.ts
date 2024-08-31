@@ -10,19 +10,11 @@ export type Routine = {
 };
 
 export const getRoutines = () => {
-  return getFetch('/routine', {
-    next: {
-      tags: ['routines'],
-    },
-  });
+  return getFetch('/routine');
 };
 
 export const getRoutine = (id: string) => {
-  return getFetch(`/routine/${id}`, {
-    next: {
-      tags: ['routine', id],
-    },
-  });
+  return getFetch(`/routine/${id}`);
 };
 
 type CreateRoutineParams = {

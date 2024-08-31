@@ -3,8 +3,6 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import { revalidateTag } from 'next/cache';
-import { permanentRedirect } from 'next/navigation';
 import PlanForm, { PlanFieldValues } from 'src/app/plan/form';
 import { getCategories } from 'src/services/server-state/category';
 import { createRoutine } from 'src/services/server-state/routine';
@@ -24,8 +22,6 @@ export default async function PlanNewPage() {
       repeatDays: formData.repeatDays.map(Number),
       categoryId: formData.categoryId,
     });
-    revalidateTag('routines');
-    permanentRedirect('/plan');
   }
 
   return (

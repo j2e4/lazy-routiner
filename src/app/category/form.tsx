@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -45,8 +46,13 @@ function CategoryForm({ action, category }: CategoryFormProps) {
       theme: category?.theme || 'GRAY',
     },
   });
+  const qc = useQueryClient();
   const onSubmit: SubmitHandler<CategoryFieldValues> = async (category) => {
     await action(category);
+    await qc.invalidateQueries({
+      queryKey: ['categories'],
+    });
+    router.back();
     // TODO pending 처리
     // TODO 에러 처리, 지금은 아무 동작하지 않는다.
   };
@@ -126,7 +132,7 @@ function CategoryForm({ action, category }: CategoryFormProps) {
           size="md"
           variant="secondary"
           onClick={() => {
-            router.replace('/setting');
+            router.back();
           }}
         >
           취소

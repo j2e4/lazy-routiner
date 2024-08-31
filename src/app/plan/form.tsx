@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -35,8 +36,16 @@ function PlanForm({ action, routine }: PlanFormProps) {
       routineName: routine?.name ?? '',
     },
   });
+  const qc = useQueryClient();
   const onSubmit: SubmitHandler<PlanFieldValues> = async (plan) => {
     await action(plan);
+    await qc.invalidateQueries({
+      queryKey: ['routines'],
+    });
+    await qc.invalidateQueries({
+      queryKey: ['routine_tabs'],
+    });
+    router.back();
     // TODO pending 처리
     // TODO 에러 처리, 지금은 아무 동작하지 않는다.
   };
@@ -161,7 +170,7 @@ function PlanForm({ action, routine }: PlanFormProps) {
           size="md"
           variant="secondary"
           onClick={() => {
-            router.replace('/plan');
+            router.back();
           }}
         >
           취소

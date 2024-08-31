@@ -1,5 +1,4 @@
 import { revalidateTag } from 'next/cache';
-import { permanentRedirect } from 'next/navigation';
 import RoutineCategoryForm, {
   CategoryFieldValues,
 } from 'src/app/category/form';
@@ -21,8 +20,6 @@ export default async function CategoryIdPage({
 
     await updateCategory(id, formData);
     revalidateTag(id);
-    revalidateTag('categories');
-    permanentRedirect('/setting');
   }
 
   return <RoutineCategoryForm action={update} category={category} />;

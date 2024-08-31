@@ -4,7 +4,6 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import { revalidateTag } from 'next/cache';
-import { permanentRedirect } from 'next/navigation';
 import PlanForm, { PlanFieldValues } from 'src/app/plan/form';
 import { getCategories } from 'src/services/server-state/category';
 import {
@@ -34,8 +33,6 @@ export default async function PlanIdPage({
       categoryId: formData.categoryId,
     });
     revalidateTag(id);
-    revalidateTag('routines');
-    permanentRedirect('/plan');
   }
 
   return (

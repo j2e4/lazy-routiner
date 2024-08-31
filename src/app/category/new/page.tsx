@@ -1,5 +1,3 @@
-import { revalidateTag } from 'next/cache';
-import { permanentRedirect } from 'next/navigation';
 import RoutineCategoryForm, {
   CategoryFieldValues,
 } from 'src/app/category/form';
@@ -10,8 +8,6 @@ export default function CategoryNewPage() {
     'use server';
 
     await createCategory(formData);
-    revalidateTag('categories');
-    permanentRedirect('/setting');
   }
 
   return <RoutineCategoryForm action={create} />;
